@@ -8,3 +8,50 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Prosthetic_Inventory {
+  id Int @id @default(autoincrement())
+  name  ProstheticType
+  details Json?  @db.JsonB
+  updated_at DateTime @default(now())
+
+  org_id Int @unique
+  organization Organization @relation(fields:[org_id], references:[id])
+}
+
+
+
+model Campaigns {
+  id Int @id @default(autoincrement())
+  title String
+  description String
+  target_amount Int
+  collected_amount Int
+  start_date DateTime @default(now())
+  end_date DateTime @default(now())
+  status CampaignsStatus
+
+  org_id Int @unique
+  organization Organization @relation(fields:[org_id], references:[id])
+
+  donations Donations[]
+
+}
+
+enum CampaignsStatus {
+ACTIVE 
+COMPLETED 
+CANCELED
+}
+
+model Donations {
+  id Int @id @default(autoincrement())
+  amount Int
+  donated_at DateTime @default(now())
+
+  donor_id Int @unique
+  user User @relation(fields:[donor_id], references:[id])
+
+  campaigns_id Int 
+  campaigns Campaigns @relation(fields:[campaigns_id], references:[id])
+}
