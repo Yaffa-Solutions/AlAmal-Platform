@@ -13,7 +13,7 @@ model Prosthetic_Inventory {
   id Int @id @default(autoincrement())
   name  ProstheticType
   details Json?  @db.JsonB
-  updated_at DateTime @default(now())
+  updated_at DateTime  @updatedAt
 
   org_id Int @unique
   organization Organization @relation(fields:[org_id], references:[id])
@@ -50,7 +50,7 @@ model Donations {
   donated_at DateTime @default(now())
 
   donor_id Int @unique
-  user User @relation(fields:[donor_id], references:[id])
+  donor Donor @relation(fields:[donor_id], references:[id])
 
   campaigns_id Int 
   campaigns Campaigns @relation(fields:[campaigns_id], references:[id])
