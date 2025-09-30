@@ -8,3 +8,81 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+
+model Patient{
+  id Int @id @default(autoincrement())
+  name String 
+  Phone String
+  age Int
+  gender Gender 
+  city String
+  disability_type  ProstheticType
+  disability_percentage Int
+  medical_reports_url String
+  created_at DateTime @default(now())
+
+  user_id Int @unique
+  user User @relation(fields:[user_id], references:[id])
+
+  requests Request[]
+
+}
+
+enum Gender{
+  FEMALE
+  MALE
+}
+
+enum ProstheticType {
+  RIGHT_ARM
+  LEFT_ARM
+  RIGHT_LEG
+  LEFT_LEG
+  RIGHT_HAND
+  LEFT_HAND
+  RIGHT_FOOT
+  LEFT_FOOT
+}
+
+model Organization{
+  id Int @id @default(autoincrement())
+  name String
+  phone String
+  address Json @db.JsonB
+  created_at DateTime @default(now())
+
+  user_id Int @unique
+  user User @relation(fields:[user_id], references:[id])
+
+  inventory ProstheticInventory[]
+  requests Request[]
+  campaigns Campaign[]
+
+}
+
+model Request{
+  id Int @id @default(autoincrement())
+  status RequestStatus @default(PENDING)
+  created_at DateTime @default(now())
+  updated_at DateTime  @updatedAt
+
+  patient_id Int
+  patient Patient @relation(fields:[patient_id], references:[id])
+
+  organization_id Int?
+  organization Organization? @relation(fields:[organization_id], references:[id])
+
+  inventory_id Int?
+  inventory ProstheticInventory? @relation(fields:[inventory_id], references:[id])
+}
+
+enum RequestStatus{
+  PENDING 
+  INPROGRESS
+  ASSIGNED
+  COMPLEATED
+  REJECTED
+}
+
+
