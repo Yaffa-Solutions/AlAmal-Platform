@@ -20,7 +20,7 @@
     "nodemailer": "^7.0.6",
     "prisma": "^6.16.3"
   },
-  "type": "commonjs",
+  "type": "module",
   "devDependencies": {
     "nodemon": "^3.1.10"
   }
