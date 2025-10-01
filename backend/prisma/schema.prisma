@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -9,27 +8,61 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id         Int        @id @default(autoincrement())
+  username   String     @unique
+  role       UserRole
+  status     UserStatus @default(PENDING)
+  created_at DateTime   @default(now())
 
-model Patient{
-  id Int @id @default(autoincrement())
-  name String 
-  Phone String
-  age Int
-  gender Gender 
-  city String
-  disability_type  ProstheticType
-  disability_percentage Int
-  medical_reports_url String
-  created_at DateTime @default(now())
-
-  user_id Int @unique
-  user User @relation(fields:[user_id], references:[id])
-
-  requests Request[]
-
+  patient            Patient?
+  organization       Organization?
+  donor              Donor?
+  emailVerifications EmailVerifications[]
 }
 
-enum Gender{
+enum UserStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+}
+
+enum UserRole {
+  PATIENT
+  ORGANIZATION
+  DONOR
+}
+
+model EmailVerifications {
+  id                Int      @id @default(autoincrement())
+  verification_code String
+  is_used           Boolean  @default(false)
+  created_at        DateTime @default(now())
+  expires_at        DateTime
+
+  user_id Int
+  user    User @relation(fields: [user_id], references: [id])
+}
+
+model Patient {
+  id                    Int            @id @default(autoincrement())
+  name                  String
+  Phone                 String
+  age                   Int
+  gender                Gender
+  city                  String
+  disability_type       ProstheticType
+  disability_percentage Int
+  medical_reports_url   String
+  created_at            DateTime       @default(now())
+
+  user_id Int  @unique
+  user    User @relation(fields: [user_id], references: [id])
+
+  requests Request[]
+}
+
+enum Gender {
   FEMALE
   MALE
 }
@@ -45,91 +78,99 @@ enum ProstheticType {
   LEFT_FOOT
 }
 
-model Organization{
-  id Int @id @default(autoincrement())
-  name String
-  phone String
-  address Json @db.JsonB
+model Organization {
+  id         Int      @id @default(autoincrement())
+  name       String
+  phone      String
+  address    Json     @db.JsonB
   created_at DateTime @default(now())
 
-  user_id Int @unique
-  user User @relation(fields:[user_id], references:[id])
+  user_id Int  @unique
+  user    User @relation(fields: [user_id], references: [id])
 
   inventory Prosthetic_Inventory[]
-  requests Request[]
+  requests  Request[]
   campaigns Campaigns[]
-
 }
 
-model Request{
-  id Int @id @default(autoincrement())
-  status RequestStatus @default(PENDING)
-  created_at DateTime @default(now())
-  updated_at DateTime  @updatedAt
+model Request {
+  id         Int           @id @default(autoincrement())
+  status     RequestStatus @default(PENDING)
+  created_at DateTime      @default(now())
+  updated_at DateTime      @updatedAt
 
   patient_id Int
-  patient Patient @relation(fields:[patient_id], references:[id])
+  patient    Patient @relation(fields: [patient_id], references: [id])
 
   organization_id Int?
-  organization Organization? @relation(fields:[organization_id], references:[id])
+  organization    Organization? @relation(fields: [organization_id], references: [id])
 
   inventory_id Int?
-  inventory Prosthetic_Inventory? @relation(fields:[inventory_id], references:[id])
+  inventory    Prosthetic_Inventory? @relation(fields: [inventory_id], references: [id])
 }
 
-enum RequestStatus{
-  PENDING 
+enum RequestStatus {
+  PENDING
   INPROGRESS
   ASSIGNED
-  COMPLEATED
+  COMPLETED
   REJECTED
 }
 
-
-
 model Prosthetic_Inventory {
-  id Int @id @default(autoincrement())
-  name  ProstheticType
-  details Json?  @db.JsonB
-  updated_at DateTime  @updatedAt
+  id         Int            @id @default(autoincrement())
+  name       ProstheticType
+  details    Json?          @db.JsonB
+  updated_at DateTime       @updatedAt
 
-  org_id Int @unique
-  organization Organization @relation(fields:[org_id], references:[id])
+  org_id       Int          @unique
+  organization Organization @relation(fields: [org_id], references: [id])
+
+  requests Request[]
 }
 
+model Donor {
+  id         Int      @id @default(autoincrement())
+  name       String
+  Phone      String
+  created_at DateTime @default(now())
 
-
-model Campaigns {
-  id Int @id @default(autoincrement())
-  title String
-  description String
-  target_amount Int
-  collected_amount Int
-  start_date DateTime @default(now())
-  end_date DateTime @default(now())
-  status CampaignsStatus
-
-  org_id Int @unique
-  organization Organization @relation(fields:[org_id], references:[id])
+  user_id Int  @unique
+  user    User @relation(fields: [user_id], references: [id])
 
   donations Donations[]
+}
 
+model Campaigns {
+  id               Int             @id @default(autoincrement())
+  title            String
+  description      String
+  target_amount    Int
+  collected_amount Int
+  start_date       DateTime        @default(now())
+  end_date         DateTime        @default(now())
+  status           CampaignsStatus
+
+  org_id       Int
+  organization Organization @relation(fields: [org_id], references: [id])
+
+  donations Donations[]
 }
 
 enum CampaignsStatus {
-ACTIVE 
-COMPLETED 
-CANCELED
+  ACTIVE
+  COMPLETED
+  CANCELED
 }
 
 model Donations {
-  id Int @id @default(autoincrement())
-  amount Int
+  id         Int      @id @default(autoincrement())
+  amount     Int
   donated_at DateTime @default(now())
 
-  donor_id Int @unique
-  donor Donor @relation(fields:[donor_id], references:[id])
+  donor_id Int
+  donor    Donor @relation(fields: [donor_id], references: [id])
 
-  campaigns_id Int 
-  campaigns Campaigns @relation(fields:[campaigns_id], references:[id])
+  campaigns_id Int
+  campaigns    Campaigns @relation(fields: [campaigns_id], references: [id])
 }
