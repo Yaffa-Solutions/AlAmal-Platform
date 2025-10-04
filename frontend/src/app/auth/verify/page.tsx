@@ -92,7 +92,7 @@ export default function verifyPage() {
     <ShieldCheck className="text-[#10B981] bg-blue-100 p-4 rounded-full w-15 h-15" />
     <h1 className="text-black text-xl font-bold "> رمز التحقق</h1>
     <p className="text-gray-600 text-sm">ادخل الرمز المرسل الى</p>
-    <span className="text-[#3B82F6] text-xs mb-4"> email@exapmle.com</span>
+    <span className="text-[#3B82F6] text-xs mb-4"> {email}</span>
     <div className=" flex gap-2">
         {code.map((num,index)=>(
             <input
