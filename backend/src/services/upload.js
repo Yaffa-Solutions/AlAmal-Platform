@@ -1,5 +1,5 @@
 import {PutObjectCommand, S3Client} from '@aws-sdk/client-s3'
-import { data_config } from '../config/config';
+import { data_config } from '../config/config.js';
 
 const s3 = new S3Client({
 region:data_config.region ,

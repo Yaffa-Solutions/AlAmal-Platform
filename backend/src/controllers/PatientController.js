@@ -4,8 +4,6 @@ import { CustomError } from '../middlewares/error.js';
 import { generatePresignedUrl } from '../services/upload.js';
 import { data_config } from '../config/config.js';
 
-
-
 export const getUploadUrl = async (req, res) => {
   try {
     const { filename, contentType } = req.body;
@@ -14,21 +12,37 @@ export const getUploadUrl = async (req, res) => {
     res.json({ url, key });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Failed to generate upload URL" });
+    res.status(500).json({ message: 'Failed to generate upload URL' });
   }
-};  
+};
 
 const AddPatient = (req, res, next) => {
   const errors = validationResult(req);
 
+  console.log(errors);
   if (!errors.isEmpty()) {
-    throw new CustomError('Validation failed',400);
+    throw new CustomError({
+      status: false,
+      message: 'Validation failed',
+      errors: errors.array(),
+    });
   }
-  const {user_id,name,Phone,age,gender,city,disability_type,disability_percentage,} = req.body;
   
-      const medical_reports_url = `https://${data_config.bucketName}.s3.${data_config.region}.amazonaws.com/${medical_reports_url}`;
+  const {
+    user_id,
+    name,
+    Phone,
+    age,
+    gender,
+    city,
+    disability_type,
+    disability_percentage,
+  } = req.body;
 
-  prisma.patient.create({
+  const medical_reports_url = `https://${data_config.bucketName}.s3.${data_config.region}.amazonaws.com/${req.body.medical_reports_url}`;
+
+  prisma.patient
+    .create({
       data: {
         user_id,
         name,
