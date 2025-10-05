@@ -9,6 +9,51 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id         Int        @id @default(autoincrement())
+  username   String     @unique
+  role       UserRole
+  status     UserStatus @default(PENDING)
+  created_at DateTime   @default(now())
+  patient            Patient?
+  organization       Organization?
+  donor              Donor?
+  emailVerifications EmailVerifications[]
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+}
+
+enum UserRole {
+  PATIENT
+  ORGANIZATION
+  DONOR
+}
+
+model EmailVerifications {
+  id                Int      @id @default(autoincrement())
+  verification_code String
+  is_used           Boolean  @default(false)
+  created_at        DateTime @default(now())
+  expires_at        DateTime
+  user_id Int
+  user    User @relation(fields: [user_id], references: [id])
+}
+
+model Donor {
+  id         Int @id @default(autoincrement())
+  user_id Int  @unique
+  user User @relation(fields: [user_id],references: [id])
+  name String
+  phone String
+  created_at DateTime @default(now())
+  country String
+
+  donations Donations[]
+}
 
 model Patient{
   id Int @id @default(autoincrement())
@@ -49,7 +94,10 @@ model Organization{
   id Int @id @default(autoincrement())
   name String
   phone String
+  type String
   address Json @db.JsonB
+  registrationCertificate  String?   
+  professionalLicense      String?
   created_at DateTime @default(now())
 
   user_id Int @unique
@@ -73,7 +121,7 @@ model Request{
   organization_id Int?
   organization Organization? @relation(fields:[organization_id], references:[id])
 
-  inventory_id Int?
+  inventory_id Int? @unique 
   inventory Prosthetic_Inventory? @relation(fields:[inventory_id], references:[id])
 }
 
@@ -95,6 +143,8 @@ model Prosthetic_Inventory {
 
   org_id Int @unique
   organization Organization @relation(fields:[org_id], references:[id])
+
+  request Request? 
 }
 
 
@@ -109,7 +159,7 @@ model Campaigns {
   end_date DateTime @default(now())
   status CampaignsStatus
 
-  org_id Int @unique
+  org_id Int
   organization Organization @relation(fields:[org_id], references:[id])
 
   donations Donations[]
@@ -127,7 +177,7 @@ model Donations {
   amount Int
   donated_at DateTime @default(now())
 
-  donor_id Int @unique
+  donor_id Int
   donor Donor @relation(fields:[donor_id], references:[id])
 
   campaigns_id Int 
