@@ -167,3 +167,15 @@ model Donations {
   campaigns_id Int
   campaigns    Campaigns @relation(fields: [campaigns_id], references: [id])
 }
+
+
+model Donor {
+  id         Int @id @default(autoincrement())
+  user_id Int  @unique
+  user User @relation(fields: [user_id],references: [id])
+  name String
+  phone String
+  created_at DateTime @default(now())
+  country String
+  donations Donations[]
+}
