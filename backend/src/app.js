@@ -1,13 +1,15 @@
 import express from "express";
 import cors from "cors";
+import route from "./routes/index.js";
+import { errorHandler } from "./middlewares/error.js";
+
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (_req, res) => {
-  res.json({ message: "Hello from Express backend!" });
-});
 
+app.use(route);
+app.use(errorHandler);
 export default app;
