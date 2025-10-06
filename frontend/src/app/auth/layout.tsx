@@ -1,7 +1,11 @@
-import React from 'react'
-import Navbar from '../components/Navbar'
+import React from 'react';
+import Navbar from '../components/Navbar';
 
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <div className="h-screen flex flex-col overflow-hidden">
       <Navbar />
@@ -9,5 +13,5 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         {children}
       </main>
     </div>
-  )
+  );
 }
