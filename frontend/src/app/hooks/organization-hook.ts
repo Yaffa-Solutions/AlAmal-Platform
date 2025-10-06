@@ -3,6 +3,7 @@ import { useState } from "react";
 import { postForm } from "@/lib/api";
 import type { Address, Organization } from "@/types/organization";
 import { API_BASE } from "@/lib/api";
+import { z } from "zod";
 
 export default function useOrganizationForm() {
   const [name, setName] = useState("");
@@ -18,6 +19,22 @@ export default function useOrganizationForm() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<Organization | null>(null);
+
+  // Zod schemas for client-side validation
+  const AddressSchema = z
+    .object({
+      city: z.string().optional(),
+      state: z.string().optional(),
+      street: z.string().optional(),
+    })
+    .passthrough();
+
+  const FormSchema = z.object({
+    name: z.string().min(1, "name is required"),
+    type: z.string().min(1, "type is required"),
+    phone: z.string().min(1, "phone is required"),
+    address: AddressSchema,
+  });
 
   async function uploadFileToS3(file: File) {
     const { url, key } = await fetch(
@@ -43,6 +60,13 @@ export default function useOrganizationForm() {
     e.preventDefault();
     setError(null);
     setSuccess(null);
+
+    const validated = FormSchema.safeParse({ name, type, phone, address });
+    if (!validated.success) {
+      const first = validated.error.issues?.[0];
+      setError(first?.message || "Invalid form data");
+      return;
+    }
 
     if (!registrationCertificate || !professionalLicense) {
       setError("Both certificates are required");

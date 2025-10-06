@@ -1,5 +1,6 @@
 "use client";
 import useOrganizationForm from "@/app/hooks/organization-hook";
+import type { Address } from "@/types/organization";
 
 export default function OrganizationForm() {
   const {
@@ -90,7 +91,6 @@ export default function OrganizationForm() {
             <h2 className=" text-[24px] font-semibold text-[#4B5563]  flex items-center gap-2 mb-4">
               <span className="text-green-500 text-lg">•</span> معلومات العنوان
             </h2>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 ">
               <div>
                 <label className="block text-[14px] text-[#4B5563] mb-1">
@@ -101,7 +101,7 @@ export default function OrganizationForm() {
                   className="border w-full border-[#E4E9F2] rounded-xl px-3 py-2 focus:ring-2 focus:ring-[#4B6BFB]/20 outline-none"
                   value={address.city || ""}
                   onChange={(e) =>
-                    setAddress((a) => ({ ...a, city: e.target.value }))
+                    setAddress((a: Address) => ({ ...a, city: e.target.value }))
                   }
                 />
               </div>
@@ -114,7 +114,7 @@ export default function OrganizationForm() {
                   className="border w-full border-[#E4E9F2] rounded-xl px-3 py-2 focus:ring-2 focus:ring-[#4B6BFB]/20 outline-none"
                   value={address.state || ""}
                   onChange={(e) =>
-                    setAddress((a) => ({ ...a, state: e.target.value }))
+                    setAddress((a: Address) => ({ ...a, state: e.target.value }))
                   }
                 />
               </div>
@@ -127,7 +127,7 @@ export default function OrganizationForm() {
                   className=" w-full border border-[#E4E9F2] rounded-xl px-3 py-2 focus:ring-2 focus:ring-[#4B6BFB]/20 outline-none"
                   value={address.street || ""}
                   onChange={(e) =>
-                    setAddress((a) => ({ ...a, street: e.target.value }))
+                    setAddress((a: Address) => ({ ...a, street: e.target.value }))
                   }
                 />
               </div>
