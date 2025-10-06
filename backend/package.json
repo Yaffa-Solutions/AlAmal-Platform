@@ -13,19 +13,21 @@
   "description": "",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.901.0",
+    "@aws-sdk/s3-request-presigner": "^3.901.0",
     "@prisma/client": "^6.16.3",
     "body-parser": "^2.2.0",
+    "busboy": "^1.6.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "express-validator": "^7.2.1",
-    "nodemailer": "^7.0.6"
+    "nodemailer": "^7.0.6",
+    "zod": "^4.1.11"
   },
   "type": "module",
+  "type": "module",
   "devDependencies": {
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.3",
     "nodemon": "^3.1.10",
-    "prisma": "^6.16.3"
+    "uuid": "^13.0.0"
   }
 }
