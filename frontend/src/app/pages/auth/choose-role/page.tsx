@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { User, Building, Heart } from 'lucide-react';
-import RoleCard from '../../components/RoleCard';
+import RoleCard from '../../../components/RoleCard';
 
 export default function ChooseRole() {
   return (

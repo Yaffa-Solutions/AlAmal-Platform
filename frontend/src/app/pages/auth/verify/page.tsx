@@ -3,8 +3,8 @@ import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import { ShieldCheck } from 'lucide-react';
-import sendOTP from '../../utils/otp';
-import { otpSchema } from '../../validation/otp';
+import sendOTP from '../../../utils/otp';
+import { otpSchema } from '../../../validation/otp';
 
 export default function VerifyPage() {
   const [code, setcode] = useState<string[]>(['', '', '', '', '', '']);
@@ -97,7 +97,7 @@ export default function VerifyPage() {
       }
 
       if (data.status === 'PENDING') {
-        router.push('/auth/choose-role');
+        router.push('/pages/auth/choose-role');
       } else {
         router.push('/dashboard');
       }

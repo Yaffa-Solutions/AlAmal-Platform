@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Mail } from 'lucide-react';
-import sendOTP from '../../utils/otp';
-import { loginSchema } from '../../validation/otp';
+import sendOTP from '../../../utils/otp';
+import { loginSchema } from '../../../validation/otp';
 
 export default function Login() {
   const [email, setEmail] = useState<string>('');
@@ -27,7 +27,7 @@ export default function Login() {
         setError(data.message || 'حدث خطأ في السيرفر');
       } else {
         console.log('تم ارسال رمز التحقق');
-        router.push(`/auth/verify?email=${encodeURIComponent(email)}`);
+        router.push(`/pages/auth/verify?email=${encodeURIComponent(email)}`);
       }
     } catch (err) {
       console.error(err);
