@@ -1,6 +1,7 @@
 import { createOrganization } from "../services/organization-service.js";
 import { generatePresignedUrl } from "../services/s3-service.js";
 import { z } from "zod";
+import { getOrganizationById } from "../services/organization-service.js";
 
 export const getUploadUrl = async (req, res) => {
   try {
@@ -11,6 +12,18 @@ export const getUploadUrl = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to generate upload URL" });
+  }
+};
+
+export const getOrgByIdHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const org = await getOrganizationById(id);
+    if (!org) return res.status(404).json({ message: "Organization not found" });
+    res.json(org);
+  } catch (err) {
+    console.error("getOrgByIdHandler error:", err);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 

@@ -9,3 +9,18 @@ export const createOrganization = (data) => {
     },
   });
 };
+
+export const getOrganizationById = (id) => {
+  return prisma.organization.findUnique({
+    where: { id: Number(id) },
+    include: {
+      _count: {
+        select: {
+          inventory: true,
+          requests: true,
+          campaigns: true,
+        },
+      },
+    },
+  });
+};
