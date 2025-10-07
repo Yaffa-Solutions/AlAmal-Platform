@@ -67,7 +67,7 @@ export default function OrganizationForm() {
           </p>
         </div>
 
-        <form onSubmit={onSubmit} className="space-y-8 p-8">
+        <form onSubmit={onSubmit} className="relative space-y-8 p-8">
           <section className="space-y-4">
             <h2 className="text-[24px] mb-4 font-semibold text-[#4B5563] flex items-center gap-2">
               <span className="text-[#4B6BFB] text-lg">•</span> المعلومات
