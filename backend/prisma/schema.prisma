@@ -11,7 +11,7 @@ datasource db {
 model User {
   id         Int        @id @default(autoincrement())
   username   String     @unique
-  role       UserRole
+  role       UserRole?
   status     UserStatus @default(PENDING)
   created_at DateTime   @default(now())
 
