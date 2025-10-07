@@ -1,6 +1,7 @@
 "use client";
 import useOrganizationForm from "@/app/hooks/organization-hook";
 import type { Address } from "@/types/organization";
+import { useEffect, useMemo } from "react";
 
 export default function OrganizationForm() {
   const {
@@ -21,6 +22,35 @@ export default function OrganizationForm() {
     setProfessionalLicense,
     onSubmit,
   } = useOrganizationForm();
+
+  const registrationPreview = useMemo(() => {
+    if (
+      registrationCertificate &&
+      registrationCertificate.type?.startsWith("image/")
+    ) {
+      return URL.createObjectURL(registrationCertificate);
+    }
+    return null;
+  }, [registrationCertificate]);
+
+  const professionalPreview = useMemo(() => {
+    if (professionalLicense && professionalLicense.type?.startsWith("image/")) {
+      return URL.createObjectURL(professionalLicense);
+    }
+    return null;
+  }, [professionalLicense]);
+
+  useEffect(() => {
+    return () => {
+      if (registrationPreview) URL.revokeObjectURL(registrationPreview);
+    };
+  }, [registrationPreview]);
+
+  useEffect(() => {
+    return () => {
+      if (professionalPreview) URL.revokeObjectURL(professionalPreview);
+    };
+  }, [professionalPreview]);
 
   return (
     <div
@@ -114,7 +144,10 @@ export default function OrganizationForm() {
                   className="border w-full border-[#E4E9F2] rounded-xl px-3 py-2 focus:ring-2 focus:ring-[#4B6BFB]/20 outline-none"
                   value={address.state || ""}
                   onChange={(e) =>
-                    setAddress((a: Address) => ({ ...a, state: e.target.value }))
+                    setAddress((a: Address) => ({
+                      ...a,
+                      state: e.target.value,
+                    }))
                   }
                 />
               </div>
@@ -127,7 +160,10 @@ export default function OrganizationForm() {
                   className=" w-full border border-[#E4E9F2] rounded-xl px-3 py-2 focus:ring-2 focus:ring-[#4B6BFB]/20 outline-none"
                   value={address.street || ""}
                   onChange={(e) =>
-                    setAddress((a: Address) => ({ ...a, street: e.target.value }))
+                    setAddress((a: Address) => ({
+                      ...a,
+                      street: e.target.value,
+                    }))
                   }
                 />
               </div>
@@ -163,9 +199,19 @@ export default function OrganizationForm() {
               </label>
 
               {registrationCertificate && (
-                <p className="mt-2 text-sm text-gray-500">
-                  {registrationCertificate.name}
-                </p>
+                <div className="mt-2">
+                  {registrationPreview ? (
+                    <img
+                      src={registrationPreview}
+                      alt="معاينة شهادة التسجيل"
+                      className="mx-auto max-h-48 rounded-lg border border-gray-200"
+                    />
+                  ) : (
+                    <p className="text-sm text-gray-500">
+                      {registrationCertificate.name}
+                    </p>
+                  )}
+                </div>
               )}
             </div>
 
@@ -199,9 +245,19 @@ export default function OrganizationForm() {
                   </label>
 
                   {professionalLicense && (
-                    <p className="mt-2 text-xs text-gray-500">
-                      {professionalLicense.name}
-                    </p>
+                    <div className="mt-2">
+                      {professionalPreview ? (
+                        <img
+                          src={professionalPreview}
+                          alt="معاينة ترخيص المهن"
+                          className="mx-auto max-h-48 rounded-lg border border-gray-200"
+                        />
+                      ) : (
+                        <p className="text-xs text-gray-500">
+                          {professionalLicense.name}
+                        </p>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
