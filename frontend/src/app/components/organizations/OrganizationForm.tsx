@@ -185,7 +185,7 @@ export default function OrganizationForm() {
               <input
                 id="registrationFile"
                 type="file"
-                accept=".pdf,image/*"
+                accept=".pdf,.doc,.docx,image/*"
                 className="hidden"
                 onChange={(e) =>
                   setRegistrationCertificate(e.target.files?.[0] || null)
@@ -229,7 +229,7 @@ export default function OrganizationForm() {
                   <input
                     id="professionalLicense"
                     type="file"
-                    accept=".pdf,image/*"
+                    accept=".pdf,.doc,.docx,image/*"
                     onChange={(e) =>
                       setProfessionalLicense(e.target.files?.[0] || null)
                     }

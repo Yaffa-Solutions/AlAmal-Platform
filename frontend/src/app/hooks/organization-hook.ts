@@ -36,6 +36,26 @@ export default function useOrganizationForm() {
     address: AddressSchema,
   });
 
+  function isAllowedFile(file: File) {
+    const mime = (file.type || "").toLowerCase();
+    if (mime.startsWith("image/")) return true;
+    if (mime === "application/pdf") return true;
+    if (mime === "application/msword") return true;
+    if (
+      mime ===
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    )
+      return true;
+
+    const name = file.name.toLowerCase();
+    if (name.endsWith(".pdf")) return true;
+    if (name.endsWith(".doc")) return true;
+    if (name.endsWith(".docx")) return true;
+    if (name.match(/\.(png|jpg|jpeg|gif|bmp|webp|svg|tiff|ico)$/)) return true;
+
+    return false;
+  }
+
   async function uploadFileToS3(file: File) {
     const { url, key } = await fetch(
       `${API_BASE}/api/organizations/upload-url`,
@@ -70,6 +90,14 @@ export default function useOrganizationForm() {
 
     if (!registrationCertificate || !professionalLicense) {
       setError("Both certificates are required");
+      return;
+    }
+
+    if (
+      !isAllowedFile(registrationCertificate) ||
+      !isAllowedFile(professionalLicense)
+    ) {
+      setError("Files must be images, PDF, or Word documents (.doc, .docx)");
       return;
     }
 
