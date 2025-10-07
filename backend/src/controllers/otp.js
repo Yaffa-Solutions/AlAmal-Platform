@@ -7,16 +7,15 @@ import {
 import { generateToken } from '../utils/auth/generateToken.js';
 
 export const requestOTPController = async (req, res) => {
-  const validation = requestOTPSchema.safeParse(req.body);
-  if (!validation.success) {
-    return res.status(400).json({
-      message: 'Validation error',
-      errors: validation.error.errors,
-    });
-  }
-  const { username } = validation.data;
-
   try {
+    const validation = requestOTPSchema.safeParse(req.body);
+    if (!validation.success) {
+      const error = new Error('Validation error');
+      error.status = 400;
+      error.details = validation.error.errors;
+      throw error;
+    }
+    const { username } = validation.data;
     const user = await findOrCreateUser(username);
     const result = await requestOTP(user);
     return res.status(200).json({
@@ -25,25 +24,22 @@ export const requestOTPController = async (req, res) => {
     });
   } catch (err) {
     console.error('error is requestOtpCon:', err);
-    return res
-      .status(500)
-      .json({ message: 'failed to send otp ', error: err.message });
+    next(err);
   }
 };
 
 export const verifyOTPController = async (req, res) => {
-  const validation = verifyOTPSchema.safeParse(req.body);
-  if (!validation.success) {
-    return res.status(400).json({
-      message: 'Validation error',
-      errors: validation.error.errors,
-    });
-  }
-
-  const { username, code } = validation.data;
-
   try {
-    const result = await verifyOTP(username, code);
+    const validation = verifyOTPSchema.safeParse(req.body);
+    if (!validation.success) {
+      const error = new Error('Validation error');
+      error.status = 400;
+      error.details = validation.error.errors;
+      throw error;
+    }
+
+    const { username, code } = validation.data;
+    await verifyOTP(username, code);
     const user = await findOrCreateUser(username);
     const token = generateToken(user);
     res.cookie('token', token, {
@@ -57,8 +53,6 @@ export const verifyOTPController = async (req, res) => {
     });
   } catch (err) {
     console.error('error in verifyOTPCon:', err);
-    return res
-      .status(400)
-      .json({ message: 'otp  verification failed', error: err.message });
+    next(err);
   }
 };

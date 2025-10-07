@@ -26,7 +26,7 @@ export default function ChooseRole() {
           </p>
         </div>
 
-        <div className="relative z-10 flex flex-row gap-6 mt-6 justify-center flex-wrap flex-row-reverse">
+        <div className="relative z-10 flex gap-6 mt-6 justify-center flex-wrap flex-row-reverse">
           <RoleCard
             icon={<User size={32} />}
             title="مريض"

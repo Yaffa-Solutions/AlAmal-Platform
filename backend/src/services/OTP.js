@@ -10,10 +10,6 @@ export const requestOTP = async (user) => {
     const code = generateOTP();
     const expiresAt = new Date(Date.now() + 3 * 60 * 1000);
 
-    await prisma.emailVerifications.deleteMany({
-      where: { user_id: user.id },
-    });
-
     await prisma.emailVerifications.create({
       data: {
         user_id: user.id,
