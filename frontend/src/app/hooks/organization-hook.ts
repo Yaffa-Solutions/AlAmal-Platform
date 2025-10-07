@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { postForm } from "@/lib/api";
 import type { Address, Organization } from "@/types/organization";
 import { API_BASE } from "@/lib/api";
@@ -134,13 +134,30 @@ export default function useOrganizationForm() {
       setAddress({});
       setRegistrationCertificate(null);
       setProfessionalLicense(null);
+      localStorage.removeItem("organizationDraft");
     } catch {
       setError("Failed to create organization");
     } finally {
-      // ✅ Always return button to default state
       setSubmitting(false);
     }
   }
+
+  function saveDraftLocally() {
+    const draft = { name, phone, type, address };
+    localStorage.setItem("organizationDraft", JSON.stringify(draft));
+    alert("تم حفظ المسودة  ✅");
+  }
+
+  useEffect(() => {
+    const draft = localStorage.getItem("organizationDraft");
+    if (draft) {
+      const data = JSON.parse(draft);
+      setName(data.name || "");
+      setPhone(data.phone || "");
+      setType(data.type || "");
+      setAddress(data.address || {});
+    }
+  }, []);
 
   return {
     name,
@@ -152,6 +169,7 @@ export default function useOrganizationForm() {
     submitting,
     error,
     success,
+    saveDraftLocally,
 
     setName,
     setPhone,

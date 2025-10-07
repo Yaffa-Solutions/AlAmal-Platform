@@ -14,6 +14,7 @@ export default function OrganizationForm() {
     submitting,
     error,
     success,
+    saveDraftLocally,
     setName,
     setPhone,
     setType,
@@ -276,8 +277,8 @@ export default function OrganizationForm() {
           <div className="flex gap-3 justify-center pt-6">
             <button
               type="button"
+              onClick={saveDraftLocally}
               className="border border-[#D0D7E2] text-[#1A2954] px-8 py-2 rounded-xl hover:bg-[#F3F5F9] transition font-medium"
-              onClick={() => window.history.back()}
             >
               حفظ كمسودة
             </button>
