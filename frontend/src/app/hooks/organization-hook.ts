@@ -4,8 +4,10 @@ import { postForm } from "@/lib/api";
 import type { Address, Organization } from "@/types/organization";
 import { API_BASE } from "@/lib/api";
 import { z } from "zod";
+import { useRouter } from "next/navigation";
 
 export default function useOrganizationForm() {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [type, setType] = useState<string | "">("");
@@ -93,6 +95,9 @@ export default function useOrganizationForm() {
         payload
       );
       setSuccess(created);
+      if (created?.id) {
+        router.push(`/pages/organizations/${created.id}/dashboard`);
+      }
       setName("");
       setPhone("");
       setType("");
