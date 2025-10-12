@@ -2,8 +2,15 @@ import { createOrganization } from "../services/organization-service.js";
 import { generatePresignedUrl } from "../services/s3-service.js";
 import { z } from "zod";
 import { getOrganizationById } from "../services/organization-service.js";
+import {
+  getRecentInventoryByOrg,
+  getRecentCampaignsByOrg,
+  getActiveCampaignsByOrg,
+} from "../services/organization-service.js";
 
 export const getUploadUrl = async (req, res) => {
+  console.log(req.body);
+
   try {
     const { filename, contentType } = req.body;
 
@@ -15,11 +22,48 @@ export const getUploadUrl = async (req, res) => {
   }
 };
 
+export const getRecentInventoryHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { limit } = req.query;
+    const items = await getRecentInventoryByOrg(id, limit ?? 5);
+    res.json(items);
+  } catch (err) {
+    console.error("getRecentInventoryHandler error:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getRecentCampaignsHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { limit } = req.query;
+    const items = await getRecentCampaignsByOrg(id, limit ?? 5);
+    res.json(items);
+  } catch (err) {
+    console.error("getRecentCampaignsHandler error:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getActiveCampaignsHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { limit } = req.query;
+    const items = await getActiveCampaignsByOrg(id, limit ?? 3);
+    res.json(items);
+  } catch (err) {
+    console.error("getActiveCampaignsHandler error:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 export const getOrgByIdHandler = async (req, res) => {
   try {
     const { id } = req.params;
     const org = await getOrganizationById(id);
-    if (!org) return res.status(404).json({ message: "Organization not found" });
+    if (!org)
+      return res.status(404).json({ message: "Organization not found" });
     res.json(org);
   } catch (err) {
     console.error("getOrgByIdHandler error:", err);
@@ -70,7 +114,7 @@ export const createOrgHandler = async (req, res) => {
       name,
       type,
       phone,
-      userId: 1,
+      user_id: 14,
       address,
       registrationCertificate: registration_certificate_key,
       professionalLicense: professional_license_key,

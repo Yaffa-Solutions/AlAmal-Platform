@@ -22,7 +22,6 @@ export default function useOrganizationForm() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<Organization | null>(null);
 
-  // Zod schemas for client-side validation
   const AddressSchema = z
     .object({
       city: z.string().optional(),
@@ -39,23 +38,33 @@ export default function useOrganizationForm() {
   });
 
   async function uploadFileToS3(file: File) {
-    const { url, key } = await fetch(
-      `${API_BASE}/api/organizations/upload-url`,
-      {
+    console.log("Starting upload to S3...");
+    try {
+      const response = await fetch(`${API_BASE}/api/organizations/upload-url`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ filename: file.name, contentType: file.type }),
-      }
-    ).then((res) => res.json());
+      });
 
-    if (url) {
-      await fetch(url, {
+      console.log("Response from upload-url:", response.status);
+      if (!response.ok) throw new Error(await response.text());
+
+      const { url, key } = await response.json();
+      console.log("Signed URL:", url);
+
+      const put = await fetch(url, {
         method: "PUT",
         body: file,
         headers: { "Content-Type": file.type },
       });
+
+      console.log("S3 PUT status:", put.status);
+
+      return key as string;
+    } catch (err) {
+      console.error("uploadFileToS3 error:", err);
+      throw err;
     }
-    return key as string;
   }
 
   async function onSubmit(e: React.FormEvent) {
@@ -81,11 +90,11 @@ export default function useOrganizationForm() {
     const payload = {
       name,
       phone,
-      user_id: 1,
+      user_id: 14,
       type,
       address,
-      registration_certificate_key: registrationKey,
-      professional_license_key: licenseKey,
+      registrationCertificate: registrationKey,
+      professionalLicense: licenseKey,
     };
 
     setSubmitting(true);

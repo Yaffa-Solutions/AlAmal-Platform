@@ -10,6 +10,7 @@ export default function SideBar({ orgId }: { orgId: string }) {
     { href: `${base}/inventory`, label: "المخزون" },
     { href: `${base}/requests`, label: "الطلبات" },
     { href: `${base}/campaigns`, label: "الحملات" },
+    { href: `${base}/settings`, label: "الإعدادات" },
   ];
 
   return (
