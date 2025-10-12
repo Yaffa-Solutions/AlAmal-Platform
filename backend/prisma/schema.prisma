@@ -105,8 +105,8 @@ model Request {
   patient_id Int
   patient    Patient @relation(fields: [patient_id], references: [id])
 
-  organization_id Int?
-  organization    Organization? @relation(fields: [organization_id], references: [id])
+organization_id Int?
+organization    Organization? @relation(fields: [organization_id], references: [id], onDelete: SetNull)
 
   inventory_id Int? @unique 
   inventory Prosthetic_Inventory? @relation(fields:[inventory_id], references:[id])
