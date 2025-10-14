@@ -1,17 +1,28 @@
 import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
+import cookieParser from 'cookie-parser';
+import otpRoutes from './routes/otpRoutes.js';
+import roleRouter from './routes/roleRouter.js';
+const app = express();
+
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true
+}));
 import organizationRoutes from "./routes/organization-routes.js";
 
 dotenv.config();
 
-const app = express();
 app.use(express.json());
-
-app.use(cors({ origin: "http://localhost:3000" }));
+app.use(cookieParser());
 
 app.use("/uploads", express.static("uploads"));
 
 app.use("/api/organizations", organizationRoutes);
+
+app.use('/api/otp',otpRoutes);
+
+app.use('/api/roles', roleRouter);
 
 export default app;
