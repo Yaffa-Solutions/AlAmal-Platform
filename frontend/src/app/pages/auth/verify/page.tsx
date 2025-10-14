@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { ShieldCheck } from 'lucide-react';
 import sendOTP from '../../../utils/otp';
 import { otpSchema } from '../../../validation/otp';
+import ResendOTPButton from '../../../components/ResendOTPButton'
 
 export default function VerifyPage() {
   const [code, setcode] = useState<string[]>(['', '', '', '', '', '']);
@@ -83,7 +84,7 @@ export default function VerifyPage() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username: email, code: otp }),
-          credentials: 'include'
+          credentials: 'include',
         }
       );
       const data = await res.json();
@@ -96,10 +97,25 @@ export default function VerifyPage() {
         return;
       }
 
-      if (data.status === 'PENDING') {
+      if (data.id) {
+        localStorage.setItem('id', data.id.toString());
+      }
+      if (data.role) {
+        localStorage.setItem('role', data.role);
+      }
+      if (data.username) {
+        localStorage.setItem('username', data.username);
+      }
+      if (data.status) {
+        localStorage.setItem('status', data.status);
+      }
+
+      if (data.status === 'PENDING' && !data.role) {
         router.push('/pages/auth/choose-role');
-      } else {
-        router.push('/dashboard');
+      } else if (data.status === 'PENDING' && data.role) {
+        router.push(`/pages/forms/${data.role.toLowerCase()}`);
+      } else if (data.status === 'ACTIVE') {
+        router.push(`/dashboard/${data.role?.toLowerCase() || ''}`);
       }
     } catch (err) {
       console.error(err);
@@ -143,12 +159,8 @@ export default function VerifyPage() {
       )}
 
       <p className="text-xs text-gray-500">لم تستلم الرمز؟</p>
-      <button
-        onClick={() => resendOTP(email)}
-        className="text-xs text-[#3B82F6]"
-      >
-        إعادة الإرسال
-      </button>
+      <ResendOTPButton username={email} onResend={resendOTP} setError={setError} />
+
       <button
         disabled={code.some((num) => num === '')}
         onClick={handleVerify}

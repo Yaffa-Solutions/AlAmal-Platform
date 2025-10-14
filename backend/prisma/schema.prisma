@@ -39,6 +39,8 @@ model EmailVerifications {
   is_used           Boolean  @default(false)
   created_at        DateTime @default(now())
   expires_at        DateTime
+  magic_token_hash          String?  @unique
+  magic_token_expires_at    DateTime?
 
   user_id Int
   user    User @relation(fields: [user_id], references: [id])

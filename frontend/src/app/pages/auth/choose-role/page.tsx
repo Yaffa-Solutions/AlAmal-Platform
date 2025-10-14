@@ -1,10 +1,57 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { User, Building, Heart } from 'lucide-react';
 import RoleCard from '../../../components/RoleCard';
+import { useRouter } from 'next/navigation';
 
 export default function ChooseRole() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  type RoleType = 'PATIENT' | 'ORGANIZATION' | 'DONOR';
+
+  const handleChooseRole = async (role: RoleType) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/roles/assign-role`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({ role }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || 'حدث خطأ أثناء تعيين الدور');
+        return;
+      }
+
+      localStorage.setItem('role', role);
+
+      if (role === 'PATIENT') {
+        router.push('/pages/forms/patient');
+      } else if (role === 'ORGANIZATION') {
+        router.push('/pages/forms/organizations');
+      } else if (role === 'DONOR') {
+        router.push('/pages/forms/donor');
+      }
+    } catch (err) {
+      console.error(err);
+      setError('فشل الاتصال بالسيرفر');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen min-w-screen">
       <div
@@ -32,24 +79,26 @@ export default function ChooseRole() {
             title="مريض"
             description="أحتاج الى طرف صناعي او مساعدة طبية "
             color="#7057FF"
-            onClick={() => console.log('مريض')}
+            onClick={() => handleChooseRole('PATIENT')}
           />
           <RoleCard
             icon={<Building size={32} />}
             title="مؤسسة"
             description="مؤسسة صحية او خيرية تقدم الخدمات"
             color="#4CAF50"
-            onClick={() => console.log('المؤسسة')}
+            onClick={() => handleChooseRole('ORGANIZATION')}
           />
           <RoleCard
             icon={<Heart size={32} />}
             title="متبرع"
             description="أريد المساهمة في مساعدة المحتاجين"
             color="#EF4444"
-            onClick={() => console.log('المتبرع')}
+            onClick={() => handleChooseRole('DONOR')}
           />
         </div>
       </div>
+      {loading && <p className="text-blue-600 mt-4">جارٍ حفظ الاختيار</p>}
+      {error && <p className="text-red-600 mt-4">{error}</p>}
     </div>
   );
 }

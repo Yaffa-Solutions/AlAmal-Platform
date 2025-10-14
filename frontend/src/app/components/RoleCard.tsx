@@ -18,7 +18,7 @@ const RoleCard: React.FC<RoleCardProps> = ({
   return (
     <div
       onClick={onClick}
-      className="flex flex-col items-center justify-center gap-2 p-6 bg-white rounded-xl shadow-md hover:shadow-lg hover: cursor-pointer transition-shadow duration-200 w-46"
+      className="flex flex-col items-center justify-center gap-2 p-6 bg-white rounded-xl shadow-md hover:shadow-2xl hover: cursor-pointer transition-shadow duration-200 w-46"
     >
       <div
         className="bg-gray-100 p-4 rounded-full w-15 h-15 flex items-center justify-center"
