@@ -32,9 +32,35 @@ export const getRecentRequestsAll = (limit, search) => {
   });
 };
 
-export const updateRequestStatus = (id, organizationId, statu) => {
+export const updateRequestStatus = (
+  id,
+  status,
+  inventory_id,
+  organization_id
+) => {
+  const data = {};
+
+  if (status !== undefined) data.status = status;
+  if (organization_id !== undefined)
+    data.organization_id = Number(organization_id);
+
+  if (inventory_id !== undefined && inventory_id !== null) {
+    data.inventory_id = Number(inventory_id);
+
+    return prisma.$transaction([
+      prisma.request.update({
+        where: { id: Number(id) },
+        data,
+      }),
+      prisma.prosthetic_Inventory.update({
+        where: { id: Number(inventory_id) },
+        data: { is_granted: true },
+      }),
+    ]);
+  }
+
   return prisma.request.update({
     where: { id: Number(id) },
-    data: { status: statu, organization_id: Number(organizationId) },
+    data,
   });
 };

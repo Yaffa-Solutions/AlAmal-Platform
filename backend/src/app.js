@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import organizationRoutes from "./routes/organization-routes.js";
 import requestRoutes from "./routes/request-routes.js";
+import prostheticRouter from "./routes/prosthetic_routes.js";
 
 dotenv.config();
 
@@ -21,4 +22,6 @@ app.use("/uploads", express.static("uploads"));
 
 app.use("/api/organizations", organizationRoutes);
 app.use("/api/requests", requestRoutes);
+app.use("/api/prosthetics", prostheticRouter);
+
 export default app;

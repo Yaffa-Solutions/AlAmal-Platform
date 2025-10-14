@@ -90,7 +90,7 @@ export default function useOrganizationForm() {
     const payload = {
       name,
       phone,
-      user_id: 14,
+      user_id: 1,
       type,
       address,
       registrationCertificate: registrationKey,

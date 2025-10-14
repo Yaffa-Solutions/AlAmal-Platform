@@ -25,8 +25,7 @@ export const getUploadUrl = async (req, res) => {
 export const getRecentInventoryHandler = async (req, res) => {
   try {
     const { id } = req.params;
-    const { limit } = req.query;
-    const items = await getRecentInventoryByOrg(id, limit ?? 5);
+    const items = await getRecentInventoryByOrg(id);
     res.json(items);
   } catch (err) {
     console.error("getRecentInventoryHandler error:", err);
@@ -114,7 +113,7 @@ export const createOrgHandler = async (req, res) => {
       name,
       type,
       phone,
-      user_id: 14,
+      user_id: 1,
       address,
       registrationCertificate: registration_certificate_key,
       professionalLicense: professional_license_key,

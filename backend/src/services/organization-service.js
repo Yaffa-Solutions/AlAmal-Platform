@@ -25,11 +25,25 @@ export const getOrganizationById = (id) => {
   });
 };
 
-export const getRecentInventoryByOrg = (orgId, limit) => {
+export const getRecentInventoryByOrg = (orgId) => {
   return prisma.prosthetic_Inventory.findMany({
     where: { org_id: Number(orgId) },
-    orderBy: { updated_at: "desc" },
-    take: Number(limit),
+    select: {
+      id: true,
+      name: true,
+      details: true,
+      is_granted: true,
+      updated_at: true,
+      request: {
+        select: {
+          patient: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+    },
   });
 };
 

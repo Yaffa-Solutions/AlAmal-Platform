@@ -124,9 +124,10 @@ model Prosthetic_Inventory {
   id         Int            @id @default(autoincrement())
   name       ProstheticType
   details    Json?          @db.JsonB
-  updated_at DateTime       @updatedAt
+  is_granted Boolean         @default(false)
+  updated_at DateTime?       @updatedAt
 
-  org_id Int @unique
+  org_id Int
   organization Organization @relation(fields:[org_id], references:[id])
 
   request Request? 

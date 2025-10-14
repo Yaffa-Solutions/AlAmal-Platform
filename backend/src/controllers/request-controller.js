@@ -29,12 +29,15 @@ export const getRecentRequestsAllHandler = async (req, res) => {
 
 export const updateRequestStatusHandler = async (req, res) => {
   try {
-    console.log(req.params, req.body);
-
     const { id } = req.params;
-    const { status, organization_id } = req.body;
+    const { status, inventory_id, organization_id } = req.body;
 
-    const updated = await updateRequestStatus(id, organization_id, status);
+    const updated = await updateRequestStatus(
+      id,
+      status,
+      inventory_id,
+      organization_id
+    );
 
     res.json(updated);
   } catch (err) {

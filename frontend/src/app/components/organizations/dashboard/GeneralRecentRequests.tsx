@@ -59,7 +59,11 @@ export default function GeneralRecentRequests({ orgId }: { orgId: string }) {
       const res = await fetch(`${API_BASE}/api/requests/${id}/status`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "INPROGRESS", organization_id: orgId }),
+        body: JSON.stringify({
+          status: "INPROGRESS",
+          inventory_id: undefined,
+          organization_id: orgId,
+        }),
       });
       window.location.reload();
       if (!res.ok) throw new Error(await res.text());
