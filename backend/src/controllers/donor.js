@@ -12,7 +12,7 @@ export const createDonorController = async (req, res, next) => {
         const { name, phone, country, gender } = validation.data;
         const userId = req.user.id;
 
-        const donor = await createDonor(userId, { name, phone, country, gender });
+        const donor = await createDonor(userId, validation.data);
         await prisma.user.update({
             where: { id: userId },
             data: { status: 'ACTIVE' },
