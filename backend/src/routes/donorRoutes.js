@@ -1,12 +1,6 @@
 import express from 'express';
 import { createDonorController } from '../controllers/donor.js';
-<<<<<<< HEAD
 import { authenticateToken } from '../middlewares/authToken.js';
-
-const router = express.Router();
-
-router.post('/form', authenticateToken, createDonorController);
-=======
 import {getCampaigns } from '../controllers/compaign.js';
 import { authenticateToken } from '../middlewares/authToken.js';
 import { createDonationController } from '../controllers/donationController.js';
@@ -18,6 +12,5 @@ router.get('/dashboard', authenticateToken, getCampaigns);
 router.post('/donate', authenticateToken, createDonationController);
 router.get('/my-donations', authenticateToken, getMyDonationsController);
 
->>>>>>> f195d7a (add full donor dashboard with campaigns, donations history, logout, and modals)
 
 export default router;
