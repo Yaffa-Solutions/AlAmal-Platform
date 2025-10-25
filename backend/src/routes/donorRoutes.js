@@ -1,6 +1,5 @@
 import express from 'express';
 import { createDonorController } from '../controllers/donor.js';
-import { authenticateToken } from '../middlewares/authToken.js';
 import {getCampaigns } from '../controllers/compaign.js';
 import { authenticateToken } from '../middlewares/authToken.js';
 import { createDonationController } from '../controllers/donationController.js';
