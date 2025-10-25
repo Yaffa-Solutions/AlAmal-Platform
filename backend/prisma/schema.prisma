@@ -11,7 +11,7 @@ datasource db {
 model User {
   id         Int        @id @default(autoincrement())
   username   String     @unique
-  role       UserRole
+  role       UserRole?
   status     UserStatus @default(PENDING)
   created_at DateTime   @default(now())
 
@@ -39,6 +39,8 @@ model EmailVerifications {
   is_used           Boolean  @default(false)
   created_at        DateTime @default(now())
   expires_at        DateTime
+  magic_token_hash          String?  @unique
+  magic_token_expires_at    DateTime?
 
   user_id Int
   user    User @relation(fields: [user_id], references: [id])
@@ -178,5 +180,6 @@ model Donor {
   phone String
   created_at DateTime @default(now())
   country String
+  gender Gender?
   donations Donations[]
 }
