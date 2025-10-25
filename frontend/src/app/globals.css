@@ -27,3 +27,7 @@ body {
   font-family: 'Cairo', sans-serif;
   font-family: var(--font-cairo), var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}

@@ -4,6 +4,8 @@ import cors from "cors";
 import cookieParser from 'cookie-parser';
 import otpRoutes from './routes/otpRoutes.js';
 import roleRouter from './routes/roleRouter.js';
+import donorRoutes from './routes/donorRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 const app = express();
 
 app.use(cors({
@@ -24,5 +26,10 @@ app.use("/api/organizations", organizationRoutes);
 app.use('/api/otp',otpRoutes);
 
 app.use('/api/roles', roleRouter);
+
+app.use('/api/donor', donorRoutes);
+
+app.use('/api/logout', authRoutes);
+
 
 export default app;
