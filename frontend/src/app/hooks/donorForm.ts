@@ -49,7 +49,11 @@ export const useDonorForm = () => {
         }
 
         await new Promise((resolve) => setTimeout(resolve, 500));
+<<<<<<< HEAD
         router.push('/dashboard');
+=======
+        router.push('/pages/dashboards/donor');
+>>>>>>> f195d7a (add full donor dashboard with campaigns, donations history, logout, and modals)
       }
     } catch (err) {
       setError({ message: 'تعذر الاتصال بالخادم', color: 'red' });
