@@ -11,5 +11,4 @@ router.get('/dashboard', authenticateToken, getCampaigns);
 router.post('/donate', authenticateToken, createDonationController);
 router.get('/my-donations', authenticateToken, getMyDonationsController);
 
-
 export default router;

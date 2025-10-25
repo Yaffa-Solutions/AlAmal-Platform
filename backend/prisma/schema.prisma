@@ -180,5 +180,6 @@ model Donor {
   phone String
   created_at DateTime @default(now())
   country String
+  gender Gender?
   donations Donations[]
 }
