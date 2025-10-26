@@ -49,7 +49,7 @@ export const useDonorForm = () => {
         }
 
         await new Promise((resolve) => setTimeout(resolve, 500));
-        router.push('/dashboard');
+        router.push('/pages/dashboards/donor');
       }
     } catch (err) {
       setError({ message: 'تعذر الاتصال بالخادم', color: 'red' });
