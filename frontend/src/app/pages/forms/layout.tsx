@@ -18,9 +18,9 @@ export default function FormLayout({
       | null;
     if (storedRole) setRole(storedRole);
   }, []);
-  // if (!role) {
-  //   return <div>Loading...</div>;
-  // }
+  if (!role) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen flex flex-col overflow-hidden">
