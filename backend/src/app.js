@@ -9,6 +9,7 @@ import organizationRoutes from "./routes/organization-routes.js";
 import { errorHandler } from "./middlewares/error.js";
 import patientRoutes from "./routes/PatientRoutes.js";
 
+import authRoutes from './routes/authRoutes.js';
 const app = express();
 
 app.use(cors({
@@ -30,6 +31,8 @@ app.use('/api/otp',otpRoutes);
 app.use('/api/roles', roleRouter);
 
 app.use('/api/donor', donorRoutes);
+
+app.use('/api/logout', authRoutes);
 
 app.use('/api/patient',patientRoutes);
 
