@@ -56,6 +56,8 @@ export default function usePatientForm() {
       .then((res) => {
         const { uploadUrl, fileUrl } = res;
 
+          console.log('uploadUrl' ,uploadUrl)
+
         return fetch(uploadUrl, {
           method: 'PUT',
           headers: { 'Content-Type': medicalReport.type },
@@ -71,7 +73,12 @@ export default function usePatientForm() {
           medical_reports_url: fileUrl,
         };
 
-        return postForm<Patient>('/api/patient/register', payload);
+        // return postForm<Patient>('/api/patient/register', payload);
+        return fetch(`${API_BASE}/api/patient/register`,{
+          method:'POST' , 
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify( payload)
+        })
       })
       .then(() => {
         toast('تم  ارسال الطلب بنجاح ', {

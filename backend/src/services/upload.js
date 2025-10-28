@@ -17,12 +17,17 @@ export async function generatePresignedUrl(filename, fileType) {
   
   const key = `patients/${Date.now()}-${filename}`;
   const command = new PutObjectCommand({
-    Bucket: process.env.S3_BUCKET_NAME,
+    Bucket: data_config.bucketName,
     Key: key,
     ContentType: fileType,
   });
-
+  console.log('bucket',data_config.bucketName);
+  console.log('region',data_config.region);
+  console.log('s3 client' , s3);
   const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 300 });
+
+  console.log(uploadUrl);
+  
   const fileUrl = `https://${data_config.bucketName}.s3.${data_config.region}.amazonaws.com/${key}`;
 
   return { uploadUrl, fileUrl };
