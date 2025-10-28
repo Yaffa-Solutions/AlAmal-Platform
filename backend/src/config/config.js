@@ -8,3 +8,4 @@ export const data_config = {
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   bucketName:process.env.S3_BUCKET_NAME
 };
+

@@ -54,31 +54,25 @@ export default function usePatientForm() {
 
     uploadFile(medicalReport)
       .then((res) => {
-        const { uploadUrl, fileUrl } = res;
+        const { url, key } = res;
 
-          console.log('uploadUrl' ,uploadUrl)
+        console.log(res);
 
-        return fetch(uploadUrl, {
+        return fetch(url, {
           method: 'PUT',
           headers: { 'Content-Type': medicalReport.type },
           body: medicalReport,
-        }).then(() => fileUrl);
+        }).then(() => key);
       })
-      .then((fileUrl) => {
+      .then((key) => {
         const payload = {
           ...data,
           age: Number(data.age),
           disability_percentage: Number(data.disability_percentage),
-          id: 1,
-          medical_reports_url: fileUrl,
+          user_id: 1,
+          medical_reports_url: key,
         };
-
-        // return postForm<Patient>('/api/patient/register', payload);
-        return fetch(`${API_BASE}/api/patient/register`,{
-          method:'POST' , 
-          headers:{'Content-Type':'application/json'},
-          body:JSON.stringify( payload)
-        })
+        return postForm<Patient>(`/api/patient/register`, payload);
       })
       .then(() => {
         toast('تم  ارسال الطلب بنجاح ', {

@@ -1,13 +1,13 @@
-import { generatePresignedUrl } from '../services/upload.js';
 import { createPatient } from '../services/PatientService.js';
 import { ProstheticType } from '../generated/prisma/index.js';
+import { generatePresignedUrl } from '../services/upload.js';
 
 export const getUploadUrl = async (req, res) => {
   try {
     const { filename, fileType } = req.body;
 
-    const { url } = await generatePresignedUrl(filename, fileType);
-    res.json({ url });
+    const { url , key } = await generatePresignedUrl(filename, fileType);
+    res.json({ url , key });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Failed to generate upload URL' });

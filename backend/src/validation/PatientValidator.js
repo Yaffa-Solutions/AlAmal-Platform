@@ -6,7 +6,7 @@ export const patientSchema = z.object({
   Phone: z
     .string()
     .min(9, "Phone number must be at least 9 digits")
-    .max(12, "Phone number must be at most 15 digits")
+    .max(15, "Phone number must be at most 15 digits")
     .regex(/^[0-9+\-()\s]+$/, "Phone must contain only numbers and symbols (+ - () )"),
 
   age: z
@@ -28,11 +28,7 @@ export const patientSchema = z.object({
       z.number().int().min(0, "Min 0").max(100, "Max 100")
     ),
 
-  medical_reports_url: z.string()
-    .url("Must be a valid URL")
-    .refine(url => url.endsWith(".pdf") || url.endsWith(".jpg") || url.endsWith(".jpeg") || url.endsWith(".png"),
-      { message: "Medical report must be PDF or image" }
-    ),
+  medical_reports_url: z.string(),
 
   user_id: z
     .preprocess((val) => Number(val), 

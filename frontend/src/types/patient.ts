@@ -1,5 +1,5 @@
 type Patient = {
-  id?: number;
+  user_id ?: number;
   name: string;
   Phone: string;
   age: number;

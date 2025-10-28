@@ -11,24 +11,22 @@ credentials:{
 });
 
 
-
-
 export async function generatePresignedUrl(filename, fileType) {
   
-  const key = `patients/${Date.now()}-${filename}`;
+  try{
+    const key = `patients/${Date.now()}-${filename}`;
   const command = new PutObjectCommand({
-    Bucket: data_config.bucketName,
+    Bucket: process.env.S3_BUCKET_NAME,
     Key: key,
     ContentType: fileType,
   });
-  console.log('bucket',data_config.bucketName);
-  console.log('region',data_config.region);
-  console.log('s3 client' , s3);
-  const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 300 });
 
-  console.log(uploadUrl);
-  
-  const fileUrl = `https://${data_config.bucketName}.s3.${data_config.region}.amazonaws.com/${key}`;
+  await s3.send(command);
+  const url = await getSignedUrl(s3, command, { expiresIn: 300 });
+  return { url ,  key };
 
-  return { uploadUrl, fileUrl };
+  }catch(er){
+    console.error(er);
+  }
+
 }
