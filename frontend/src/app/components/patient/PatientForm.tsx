@@ -2,7 +2,6 @@
 
 import {
   Upload,
-  ChevronRight,
   Minus,
   Plus,
   User,
@@ -33,16 +32,9 @@ export default function PatientForm() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4" dir="rtl">
+    <div className="min-h-screen  from-blue-50 to-purple-50 p-4" dir="rtl">
       <div className="max-w-2xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-blue-600 text-xl font-semibold">منصة الأمل</h1>
-          <button className="flex items-center gap-2 text-gray-700 text-sm hover:text-blue-600">
-            تسجيل بيانات المريض
-            <ChevronRight className="h-4 w-4" />
-          </button>
-        </div>
-
+       
         <div className="bg-white shadow-lg rounded-lg overflow-hidden">
           <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6">
             <h2 className="text-2xl text-center text-blue-600 font-semibold">بيانات المريض</h2>
