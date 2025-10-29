@@ -5,6 +5,10 @@ import cookieParser from 'cookie-parser';
 import otpRoutes from './routes/otpRoutes.js';
 import roleRouter from './routes/roleRouter.js';
 import donorRoutes from './routes/donorRoutes.js';
+import organizationRoutes from "./routes/organization-routes.js";
+import { errorHandler } from "./middlewares/error.js";
+import patientRoutes from "./routes/PatientRoutes.js";
+
 import authRoutes from './routes/authRoutes.js';
 const app = express();
 
@@ -12,7 +16,6 @@ app.use(cors({
   origin: 'http://localhost:3000',
   credentials: true
 }));
-import organizationRoutes from "./routes/organization-routes.js";
 
 dotenv.config();
 
@@ -31,5 +34,8 @@ app.use('/api/donor', donorRoutes);
 
 app.use('/api/logout', authRoutes);
 
+app.use('/api/patient',patientRoutes);
 
+
+app.use(errorHandler);
 export default app;
