@@ -69,7 +69,7 @@ export default function usePatientForm() {
           ...data,
           age: Number(data.age),
           disability_percentage: Number(data.disability_percentage),
-          user_id: 1,
+          user_id:  Number( localStorage.getItem('id')),
           medical_reports_url: key,
         };
         return postForm<Patient>(`/api/patient/register`, payload);

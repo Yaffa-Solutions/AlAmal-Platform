@@ -14,7 +14,7 @@ export async function generatePresignedUrl(filename, fileType) {
   try {
     const key = `patients/${Date.now()}-${filename}`;
     const command = new PutObjectCommand({
-      Bucket: process.env.S3_BUCKET_NAME,
+      Bucket: data_config.bucketName,
       Key: key,
       ContentType: fileType,
     });

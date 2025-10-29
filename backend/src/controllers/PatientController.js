@@ -2,15 +2,13 @@ import { createPatient } from '../services/PatientService.js';
 import { ProstheticType } from '../generated/prisma/index.js';
 import { generatePresignedUrl } from '../services/upload.js';
 
-export const getUploadUrl = async (req, res) => {
-  try {
-    const { filename, fileType } = req.body;
-
-    const { url, key } = await generatePresignedUrl(filename, fileType);
-    res.json({ url, key });
-  } catch (err) {
-    next(err);
-  }
+export const getUploadUrl = (req, res, next) => {
+  const { filename, fileType } = req.body;
+  generatePresignedUrl(filename, fileType)
+    .then(({ url, key }) => {
+      res.json({ url, key });
+    })
+    .catch((err) => next(err));
 };
 
 export const AddPatient = (req, res, next) => {
@@ -38,8 +36,6 @@ export const AddPatient = (req, res, next) => {
     medical_reports_url,
   })
     .then((patient) => {
-
-    
       res.status(201).json({
         message: 'Patient Added Successfully',
         status: 201,
