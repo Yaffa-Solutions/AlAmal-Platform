@@ -4,8 +4,10 @@ import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { PatientFormData, patientSchema } from '../validation/patient';
 import { API_BASE, postForm } from '@/lib/api';
+import { useRouter } from 'next/navigation';
 
 export default function usePatientForm() {
+  const router = useRouter();
   const [disabilityPercentage, setDisabilityPercentage] = useState(0);
   const [medicalReport, setMedicalReport] = useState<File | null>(null);
   const [prosthetic, setProsthetic] = useState([]);
@@ -19,7 +21,7 @@ export default function usePatientForm() {
   const [selectedCity, setSelectedCity] = useState('');
   const genders = ['ذكر', 'أنثى'];
   const cities = ['غزة', 'رفح', 'خان يونس', 'دير البلح', 'شمال غزة'];
-
+  
   const {
     register,
     handleSubmit,
@@ -78,6 +80,7 @@ export default function usePatientForm() {
         toast('تم  ارسال الطلب بنجاح ', {
           description: 'سيتم التواصل معك قريباً.',
         });
+        router.push('/pages/dashboards/patient');
         reset();
         setSelectedCity('');
         setSelectedGender('');
