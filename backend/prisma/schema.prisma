@@ -139,6 +139,7 @@ model Prosthetic_Inventory {
 
 model Campaigns {
   id               Int             @id @default(autoincrement())
+  image            String
   title            String
   description      String
   target_amount    Int

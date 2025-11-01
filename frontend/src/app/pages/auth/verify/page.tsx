@@ -115,7 +115,7 @@ export default function VerifyPage() {
       } else if (data.status === 'PENDING' && data.role) {
         router.push(`/pages/forms/${data.role.toLowerCase()}`);
       } else if (data.status === 'ACTIVE') {
-        router.push(`/dashboard/${data.role?.toLowerCase() || ''}`);
+        router.push(`pages/dashboards/${data.role?.toLowerCase() || ''}`);
       }
     } catch (err) {
       console.error(err);
