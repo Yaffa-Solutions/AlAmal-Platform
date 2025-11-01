@@ -9,6 +9,7 @@ type Campaign = {
   description: string;
   target_amount: number;
   collected_amount: number;
+  imageUrl?: string;
 };
 
 export default function ActiveCampaignsCards({ orgId }: { orgId: string }) {
@@ -64,25 +65,34 @@ export default function ActiveCampaignsCards({ orgId }: { orgId: string }) {
             return (
               <div
                 key={c.id}
-                className="bg-white border border-[#E8ECF3] rounded-2xl p-5 shadow-sm"
+                className="bg-white border border-[#E8ECF3] rounded-2xl shadow-sm overflow-hidden"
               >
-                <div className="text-lg font-bold text-[#1A2954] mb-1">
-                  {c.title}
-                </div>
-                <p className="text-sm text-[#6B7280] line-clamp-3 mb-3">
-                  {c.description}
-                </p>
-                <div className="mb-2 flex justify-between text-xs text-[#6B7280]">
-                  <span>المستهدف: {c.target_amount.toLocaleString()}</span>
-                  <span>المجموع: {c.collected_amount.toLocaleString()}</span>
-                </div>
-                <div className="h-2 w-full bg-[#E5E7EB] rounded-full overflow-hidden">
-                  <div
-                    className="h-2 bg-[#1D64D8]"
-                    style={{ width: `${pct}%` }}
+                {c.imageUrl && (
+                  <img
+                    src={c.imageUrl}
+                    alt={c.title}
+                    className="w-full h-40 object-cover"
                   />
+                )}
+                <div className="p-5">
+                  <div className="text-lg font-bold text-[#1A2954] mb-1">
+                    {c.title}
+                  </div>
+                  <p className="text-sm text-[#6B7280] line-clamp-3 mb-3">
+                    {c.description}
+                  </p>
+                  <div className="mb-2 flex justify-between text-xs text-[#6B7280]">
+                    <span>المستهدف: {c.target_amount.toLocaleString()}</span>
+                    <span>المجموع: {c.collected_amount.toLocaleString()}</span>
+                  </div>
+                  <div className="h-2 w-full bg-[#E5E7EB] rounded-full overflow-hidden">
+                    <div
+                      className="h-2 bg-[#1D64D8]"
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                  <div className="text-xs text-[#1A2954] mt-1">{pct}%</div>
                 </div>
-                <div className="text-xs text-[#1A2954] mt-1">{pct}%</div>
               </div>
             );
           })}

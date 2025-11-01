@@ -1,9 +1,9 @@
-'use client';
-import React, { useState } from 'react';
-import { useCampigns, Campaign } from '../hooks/useCampigns';
-import CampaignCardSkeleton from './CampainCardSkeleton';
-import CampaignModal from './CampaignModal';
-import DonationModal from './DonationModal';
+"use client";
+import React, { useState } from "react";
+import { useCampigns, Campaign } from "../hooks/useCampigns";
+import CampaignCardSkeleton from "./CampainCardSkeleton";
+import CampaignModal from "./CampaignModal";
+import DonationModal from "./DonationModal";
 
 export default function CampaignCard() {
   const { campaigns, loading } = useCampigns();
@@ -39,52 +39,6 @@ export default function CampaignCard() {
     );
   }
 
-  // const campaigns = [
-  //   {
-  //     id: 1,
-  //     image: '/uu.png',
-  //     title: 'حملة الحالات الطارئة',
-  //     description:
-  //       ' استجابة سريعة للحالات الطارئة والحر استجابة سريعة للحالات الطارئة والحر استجابة سريعة للحالات  استجابة سريعة للحالات الطارئة والحر استجابة سريعة للحالات الطارئة والحر استجابة سريعة ل استجابة سريعة للحالات الطارئة والحر استجابة سريعة للحالات الطارئة والحر استجابة سريعة ل والحر استجابة سريعة ل والحر استجابة سريعة ل والحر استجابة سريعة ل والحر استجابة سريعة ل والحر استجابة سريعة لوالحر استجابة سريعة ل والحر استجابة سريعة ل  الطارئة والحرجة',
-  //     collected_amount: 70,
-  //     target_amount: 100,
-  //     status: 'ACTIVE',
-  //     organization: {
-  //       id: 1,
-  //       name: 'مؤسسة الإغاثة الإنسانية',
-  //       phone: '0591234567',
-  //     },
-  //   },
-  //   {
-  //     id: 2,
-  //     image: '/uu.png',
-  //     title: 'حملة الحالات الطارئة',
-  //     description: 'استجابة سريعة للحالات الطارئة والحرجة',
-  //     collected_amount: 10,
-  //     target_amount: 100,
-  //     status: 'ACTIVE',
-  //     organization: {
-  //       id: 1,
-  //       name: 'مؤسسة الإغاثة الإنسانية',
-  //       phone: '0591234567',
-  //     },
-  //   },
-  //   {
-  //     id: 3,
-  //     image: '/uu.png',
-  //     title: 'حملة الحالات الطارئة',
-  //     description: 'استجابة سريعة للحالات الطارئة والحرجة',
-  //     collected_amount: 100,
-  //     target_amount: 100,
-  //     status: 'COMPLETED',
-  //     organization: {
-  //       id: 1,
-  //       name: 'مؤسسة الإغاثة الإنسانية',
-  //       phone: '0591234567',
-  //     },
-  //   },
-  // ];
-
   return (
     <div
       dir="rtl"
@@ -110,7 +64,7 @@ export default function CampaignCard() {
               {cam.title}
             </h3>
             <p className="text-gray-700 text-sm mb-4 text-right">
-              {cam.description.slice(0, 50)}...{' '}
+              {cam.description.slice(0, 50)}...{" "}
             </p>
 
             <div className="flex justify-between mb-2 text-xs text-gray-700">
@@ -126,7 +80,7 @@ export default function CampaignCard() {
                     (cam.collected_amount / cam.target_amount) * 100,
                     100
                   )}%`,
-                  background: 'linear-gradient(to left, #34D3A2, #047854)',
+                  background: "linear-gradient(to left, #34D3A2, #047854)",
                 }}
               ></div>
             </div>
@@ -138,17 +92,17 @@ export default function CampaignCard() {
 
               <span
                 className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                  cam.status === 'ACTIVE'
-                    ? 'bg-green-100 text-green-700'
-                    : cam.status === 'COMPLETED'
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'bg-gray-100 text-gray-500'
+                  cam.status === "ACTIVE"
+                    ? "bg-green-100 text-green-700"
+                    : cam.status === "COMPLETED"
+                    ? "bg-blue-100 text-blue-700"
+                    : "bg-gray-100 text-gray-500"
                 }`}
               >
-                {cam.status === 'ACTIVE'
-                  ? 'نشطة'
-                  : cam.status === 'COMPLETED'
-                  ? 'مكتملة'
+                {cam.status === "ACTIVE"
+                  ? "نشطة"
+                  : cam.status === "COMPLETED"
+                  ? "مكتملة"
                   : cam.status}
               </span>
             </div>
@@ -176,7 +130,7 @@ export default function CampaignCard() {
       <DonationModal
         isOpen={donateModalOpen}
         onClose={() => setDonateModalOpen(false)}
-        campaignTitle={selectedCampaign?.title || ''}
+        campaignTitle={selectedCampaign?.title || ""}
         campaignId={selectedCampaign?.id || 0}
       />
     </div>

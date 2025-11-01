@@ -12,7 +12,6 @@ export async function generatePresignedUrl(filename, contentType) {
     Key: key,
     ContentType: contentType,
   });
-  
 
   const url = await getSignedUrl(s3, command, { expiresIn: 300 });
   return { url, key };
