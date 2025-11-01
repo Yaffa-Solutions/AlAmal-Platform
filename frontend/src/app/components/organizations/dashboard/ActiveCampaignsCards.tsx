@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { API_BASE } from "@/lib/api";
 
 type Campaign = {
@@ -8,23 +11,38 @@ type Campaign = {
   collected_amount: number;
 };
 
-async function getActive(orgId: string): Promise<Campaign[]> {
-  const res = await fetch(
-    `${API_BASE}/api/organizations/${orgId}/active/campaigns?limit=3`,
-    {
-      cache: "no-store",
-    }
-  );
-  if (!res.ok) return [];
-  return res.json();
-}
+export default function ActiveCampaignsCards({ orgId }: { orgId: string }) {
+  const [items, setItems] = useState<Campaign[]>([]);
+  const [loading, setLoading] = useState(true);
 
-export default async function ActiveCampaignsCards({
-  orgId,
-}: {
-  orgId: string;
-}) {
-  const items = await getActive(orgId);
+  useEffect(() => {
+    if (!orgId) return;
+
+    const getActive = async () => {
+      try {
+        const res = await fetch(
+          `${API_BASE}/api/organizations/${orgId}/active/campaigns?limit=3`,
+          { cache: "no-store" }
+        );
+        if (!res.ok) throw new Error("Failed to load campaigns");
+        const data = await res.json();
+        setItems(data);
+      } catch (err) {
+        console.error("Error fetching active campaigns:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getActive();
+  }, [orgId]);
+
+  if (loading)
+    return (
+      <div className="bg-white border border-[#E8ECF3] rounded-2xl p-6 text-[#6B7280]">
+        جاري التحميل...
+      </div>
+    );
 
   return (
     <section className="space-y-3">

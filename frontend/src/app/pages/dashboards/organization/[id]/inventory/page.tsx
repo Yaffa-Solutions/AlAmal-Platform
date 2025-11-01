@@ -1,6 +1,10 @@
-import { AddProstheticButton } from "@/app/components/prosthetics/AddProstheticButton ";
-import { API_BASE } from "@/lib/api";
+"use client";
 
+import { API_BASE } from "@/lib/api";
+import { Trash2, Edit } from "lucide-react";
+import { useState, useEffect } from "react";
+import { AddProstheticButton } from "@/app/components/prosthetics/AddProstheticButton ";
+import { ConfirmModal } from "@/app/components/prosthetics/ConfirmModal";
 type InventoryItem = {
   id: number;
   name: string;
@@ -15,23 +19,27 @@ type InventoryItem = {
   granted_to?: { name: string };
 };
 
-async function getRecentInventory(orgId: string): Promise<InventoryItem[]> {
-  const res = await fetch(
-    `${API_BASE}/api/organizations/${orgId}/recent/inventory`,
-    {
-      next: { revalidate: 15 },
-    }
-  );
-  if (!res.ok) throw new Error(`Failed to load inventory (${res.status})`);
-  return res.json();
-}
+type GroupedItem = {
+  name: string;
+  details?: Record<string, unknown>;
+  quantity: number;
+  lastUpdated: string;
+  is_granted: boolean;
+};
 
-export default async function InventoryPage({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const items = await getRecentInventory(params.id);
+export default function InventoryPage({ params }: { params: { id: string } }) {
+  const [items, setItems] = useState<InventoryItem[]>([]);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<GroupedItem | null>(null);
+  const [selectedQuantity, setSelectedQuantity] = useState<number>(0);
+  const { id } = params;
+
+  useEffect(() => {
+    fetch(`${API_BASE}/api/organizations/${id}/recent/inventory`)
+      .then((res) => res.json())
+      .then(setItems)
+      .catch(console.error);
+  }, [id]);
 
   const grouped = Object.values(
     items.reduce(
@@ -79,9 +87,62 @@ export default async function InventoryPage({
       granted_to: i.request?.patient ?? null,
     }));
 
+  function handleDeleteClick(item: GroupedItem) {
+    setSelectedItem(item);
+    setShowConfirm(true);
+  }
+
+  async function confirmDelete(count?: number) {
+    if (!selectedItem) return;
+
+    try {
+      const detailsKey = selectedItem.details
+        ? JSON.stringify(selectedItem.details)
+        : "{}";
+      await fetch(`${API_BASE}/api/prosthetics/delete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: selectedItem.name,
+          details: detailsKey,
+          count: count || 1,
+        }),
+      });
+      window.location.reload();
+    } catch (err) {
+      console.error(err);
+      alert("حدث خطأ أثناء الحذف");
+    }
+  }
+
+  async function handleUpdate(item: {
+    name: string;
+    details?: Record<string, unknown>;
+  }) {
+    const newName = prompt("أدخل الاسم الجديد:", item.name);
+    if (!newName) return;
+
+    try {
+      const detailsKey = item.details ? JSON.stringify(item.details) : "{}";
+      await fetch(`${API_BASE}/api/prosthetics/update`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          oldName: item.name,
+          details: detailsKey,
+          newName,
+        }),
+      });
+      window.location.reload();
+    } catch (err) {
+      console.error(err);
+      alert("حدث خطأ أثناء التحديث");
+    }
+  }
+
   return (
     <main dir="rtl" className="space-y-8">
-      <AddProstheticButton orgId={params.id}/>
+      <AddProstheticButton orgId={id} />
       <section>
         <h1 className="text-xl font-bold text-[#1A2954] mb-2">ملخص المخزون</h1>
         <div className="bg-white border border-[#E8ECF3] rounded-2xl overflow-hidden">
@@ -94,6 +155,7 @@ export default async function InventoryPage({
                 <th className="text-right p-3">الكمية</th>
                 <th className="text-right p-3">تم منحه</th>
                 <th className="text-right p-3">آخر تحديث</th>
+                <th className="text-right p-3">إجراءات</th>
               </tr>
             </thead>
             <tbody>
@@ -120,6 +182,14 @@ export default async function InventoryPage({
                     <td className="p-3">
                       {new Date(it.lastUpdated).toLocaleString("ar-EG")}
                     </td>
+                    <td className="p-3 flex gap-2 justify-end">
+                      <button
+                        onClick={() => handleDeleteClick(it)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </td>
                   </tr>
                 ))
               )}
@@ -128,7 +198,6 @@ export default async function InventoryPage({
         </div>
       </section>
 
-      {/* Table 2: Granted Prosthetics */}
       <section>
         <h1 className="text-xl font-bold text-[#1A2954] mb-2">
           الأطراف الممنوحة
@@ -174,6 +243,17 @@ export default async function InventoryPage({
           </table>
         </div>
       </section>
+      {selectedItem && (
+        <ConfirmModal
+          open={showConfirm}
+          onClose={() => setShowConfirm(false)}
+          onConfirm={confirmDelete}
+          title="حذف الأطراف الصناعية"
+          message={`يوجد ${selectedItem.quantity} من هذا النوع. كم منها تريد حذفه؟`}
+          showCountInput={selectedItem.quantity > 1}
+          maxCount={selectedItem.quantity}
+        />
+      )}
     </main>
   );
 }

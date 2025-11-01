@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { API_BASE } from "@/lib/api";
 
 export function AddProstheticButton({ orgId }: { orgId: string }) {
   const [showForm, setShowForm] = useState(false);
@@ -9,6 +10,22 @@ export function AddProstheticButton({ orgId }: { orgId: string }) {
   const [size, setSize] = useState("");
   const [material, setMaterial] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Enum options for the prosthetic type
+  const prostheticTypes = [
+    "RIGHT_ARM",
+    "LEFT_ARM",
+    "RIGHT_LEG",
+    "LEFT_LEG",
+    "RIGHT_HAND",
+    "LEFT_HAND",
+    "RIGHT_FOOT",
+    "LEFT_FOOT",
+  ];
+
+  const colorOptions = ["White", "Black", "Red", "Blue"];
+  const sizeOptions = ["S", "M", "L", "XL"];
+  const materialOptions = ["Carbon Fiber", "Aluminum", "Plastic", "Iron"];
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -20,7 +37,7 @@ export function AddProstheticButton({ orgId }: { orgId: string }) {
       if (size) details.size = size;
       if (material) details.material = material;
 
-      const res = await fetch("/api/prosthetics/create", {
+      const res = await fetch(`${API_BASE}/api/prosthetics/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -44,7 +61,6 @@ export function AddProstheticButton({ orgId }: { orgId: string }) {
 
   return (
     <div className="mb-6">
-      {/* Button to open modal */}
       <button
         onClick={() => setShowForm(true)}
         className="bg-[#1A2954] text-white px-4 py-2 rounded-xl hover:bg-[#22356b]"
@@ -52,7 +68,6 @@ export function AddProstheticButton({ orgId }: { orgId: string }) {
         + إضافة طرف صناعي جديد
       </button>
 
-      {/* Modal */}
       {showForm && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <form
@@ -63,57 +78,80 @@ export function AddProstheticButton({ orgId }: { orgId: string }) {
               إضافة طرف صناعي جديد
             </h2>
 
-            {/* Prosthetic Type */}
             <div>
               <label className="block mb-1 text-sm text-gray-700">
                 النوع *
               </label>
-              <input
+              <select
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="w-full border rounded-lg p-2 text-sm"
-                placeholder="مثلاً: LEFT_LEG"
                 required
-              />
+              >
+                <option value="">اختر النوع</option>
+                {prostheticTypes.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
             </div>
 
-            {/* Optional fields */}
             <div>
               <label className="block mb-1 text-sm text-gray-700">
                 اللون (اختياري)
               </label>
-              <input
+              <select
                 value={color}
                 onChange={(e) => setColor(e.target.value)}
                 className="w-full border rounded-lg p-2 text-sm"
-                placeholder="مثل: أبيض"
-              />
+              >
+                <option value="">اختر اللون</option>
+                {colorOptions.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
               <label className="block mb-1 text-sm text-gray-700">
                 المقاس (اختياري)
               </label>
-              <input
+              <select
                 value={size}
                 onChange={(e) => setSize(e.target.value)}
                 className="w-full border rounded-lg p-2 text-sm"
-                placeholder="مثل: M"
-              />
+              >
+                <option value="">اختر المقاس</option>
+                {sizeOptions.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
               <label className="block mb-1 text-sm text-gray-700">
                 المادة (اختياري)
               </label>
-              <input
+              <select
                 value={material}
                 onChange={(e) => setMaterial(e.target.value)}
                 className="w-full border rounded-lg p-2 text-sm"
-                placeholder="مثل: كربون فايبر"
-              />
+              >
+                <option value="">اختر المادة</option>
+                {materialOptions.map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </select>
             </div>
 
+            {/* Buttons */}
             <div className="flex justify-between items-center pt-2">
               <button
                 type="button"

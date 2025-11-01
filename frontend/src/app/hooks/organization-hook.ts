@@ -86,11 +86,12 @@ export default function useOrganizationForm() {
 
     const registrationKey = await uploadFileToS3(registrationCertificate);
     const licenseKey = await uploadFileToS3(professionalLicense);
+    console.log(localStorage.getItem("id"));
 
     const payload = {
       name,
       phone,
-      user_id: 1,
+      user_id: localStorage.getItem("id"),
       type,
       address,
       registrationCertificate: registrationKey,
@@ -105,7 +106,7 @@ export default function useOrganizationForm() {
       );
       setSuccess(created);
       if (created?.id) {
-        router.push(`/pages/organizations/${created.id}/dashboard`);
+        router.push(`/pages/dashboards/organization`);
       }
       setName("");
       setPhone("");

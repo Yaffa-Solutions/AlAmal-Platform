@@ -4,9 +4,9 @@ import { usePathname } from "next/navigation";
 
 export default function SideBar({ orgId }: { orgId: string }) {
   const pathname = usePathname();
-  const base = `/pages/organizations/${orgId}/dashboard`;
+  const base = `/pages/dashboards/organization/${orgId}`;
   const items = [
-    { href: base, label: "نظرة عامة" },
+    { href: "/pages/dashboards/organization", label: "نظرة عامة" },
     { href: `${base}/inventory`, label: "المخزون" },
     { href: `${base}/requests`, label: "الطلبات" },
     { href: `${base}/campaigns`, label: "الحملات" },
