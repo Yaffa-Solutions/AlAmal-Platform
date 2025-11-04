@@ -21,7 +21,7 @@ export const confirmDonation = async (donor_id, campaigns_id, amount, stripePaym
             }
         })
         return { donation, updatedCampaign }
-    } catch (error) {
+    } catch (err) {
         console.error('confirmDonation error:', err);
         throw err;
     }
