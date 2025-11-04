@@ -51,6 +51,7 @@ export const getRecentInventoryByOrg = (orgId) => {
       name: true,
       details: true,
       is_granted: true,
+      quantity: true,
       updated_at: true,
       request: {
         select: {

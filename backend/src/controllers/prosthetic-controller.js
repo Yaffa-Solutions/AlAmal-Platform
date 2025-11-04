@@ -6,8 +6,8 @@ import {
 
 export const createProstheticHandler = async (req, res) => {
   try {
-    const { name, details, org_id } = req.body;
-    const newItem = await createProsthetic(name, details, org_id);
+    const { name, details, org_id, quantity } = req.body;
+    const newItem = await createProsthetic(name, details, org_id, quantity);
     res.status(201).json(newItem);
   } catch (err) {
     console.error("createProstheticHandler error:", err);
@@ -28,8 +28,14 @@ export const deleteProstheticHandler = async (req, res) => {
 
 export const updateProstheticHandler = async (req, res) => {
   try {
-    const { oldName, details, newName } = req.body;
-    const updated = await updateProsthetic(oldName, details, newName);
+    const { oldName, details, newName, newDetails, quantity } = req.body;
+    const updated = await updateProsthetic(
+      oldName,
+      details,
+      newName,
+      newDetails,
+      quantity
+    );
     res.json({ message: "Updated successfully", updated });
   } catch (err) {
     console.error("updateProstheticHandler error:", err);

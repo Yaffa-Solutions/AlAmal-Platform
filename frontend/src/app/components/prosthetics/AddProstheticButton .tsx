@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { API_BASE } from "@/lib/api";
+import { ConfirmModal } from "./ConfirmModal"; // adjust path if needed
 
 export function AddProstheticButton({ orgId }: { orgId: string }) {
   const [showForm, setShowForm] = useState(false);
@@ -9,9 +10,23 @@ export function AddProstheticButton({ orgId }: { orgId: string }) {
   const [color, setColor] = useState("");
   const [size, setSize] = useState("");
   const [material, setMaterial] = useState("");
+  const [quantity, setQuantity] = useState<number>(1);
   const [loading, setLoading] = useState(false);
 
-  // Enum options for the prosthetic type
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+
+  type InventoryItem = {
+    id: number;
+    name: string;
+    details?: Record<string, unknown>;
+    quantity: number;
+    is_granted: boolean;
+    updated_at: string;
+    request?: {
+      patient?: { name: string };
+    };
+  };
+
   const prostheticTypes = [
     "RIGHT_ARM",
     "LEFT_ARM",
@@ -23,19 +38,47 @@ export function AddProstheticButton({ orgId }: { orgId: string }) {
     "LEFT_FOOT",
   ];
 
-  const colorOptions = ["White", "Black", "Red", "Blue"];
+  const colorOptions = ["أبيض", "أسود"];
   const sizeOptions = ["S", "M", "L", "XL"];
-  const materialOptions = ["Carbon Fiber", "Aluminum", "Plastic", "Iron"];
+  const materialOptions = ["الكربون", "الألمنيوم", "البلاستيك", "الحديد"];
+
+  function isSameDetails(
+    a?: Record<string, unknown>,
+    b?: Record<string, unknown>
+  ) {
+    if (!a && !b) return true;
+    if (!a || !b) return false;
+
+    const keysA = Object.keys(a);
+    const keysB = Object.keys(b);
+    if (keysA.length !== keysB.length) return false;
+
+    return keysA.every((key) => String(a[key]) === String(b[key]));
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
 
     try {
+      const resInventory = await fetch(
+        `${API_BASE}/api/organizations/${orgId}/recent/inventory`
+      );
+      const existingItems: InventoryItem[] = await resInventory.json();
+
       const details: Record<string, string> = {};
       if (color) details.color = color;
       if (size) details.size = size;
       if (material) details.material = material;
+
+      const isDuplicate = existingItems.some(
+        (item) => item.name === name && isSameDetails(item.details, details)
+      );
+
+      if (isDuplicate) {
+        setShowDuplicateModal(true);
+        return;
+      }
 
       const res = await fetch(`${API_BASE}/api/prosthetics/create`, {
         method: "POST",
@@ -44,6 +87,7 @@ export function AddProstheticButton({ orgId }: { orgId: string }) {
           name,
           org_id: orgId,
           details,
+          quantity: Number(quantity),
         }),
       });
 
@@ -53,7 +97,7 @@ export function AddProstheticButton({ orgId }: { orgId: string }) {
       window.location.reload();
     } catch (err) {
       console.error(err);
-      alert("حدث خطأ أثناء إضافة الطرف الصناعي");
+      setShowDuplicateModal(true); // fallback in case of server error
     } finally {
       setLoading(false);
     }
@@ -78,6 +122,7 @@ export function AddProstheticButton({ orgId }: { orgId: string }) {
               إضافة طرف صناعي جديد
             </h2>
 
+            {/* النوع */}
             <div>
               <label className="block mb-1 text-sm text-gray-700">
                 النوع *
@@ -97,6 +142,22 @@ export function AddProstheticButton({ orgId }: { orgId: string }) {
               </select>
             </div>
 
+            {/* الكمية */}
+            <div>
+              <label className="block mb-1 text-sm text-gray-700">
+                الكمية *
+              </label>
+              <input
+                type="number"
+                min="1"
+                value={quantity}
+                onChange={(e) => setQuantity(Number(e.target.value))}
+                className="w-full border rounded-lg p-2 text-sm"
+                required
+              />
+            </div>
+
+            {/* اللون */}
             <div>
               <label className="block mb-1 text-sm text-gray-700">
                 اللون (اختياري)
@@ -115,6 +176,7 @@ export function AddProstheticButton({ orgId }: { orgId: string }) {
               </select>
             </div>
 
+            {/* المقاس */}
             <div>
               <label className="block mb-1 text-sm text-gray-700">
                 المقاس (اختياري)
@@ -133,6 +195,7 @@ export function AddProstheticButton({ orgId }: { orgId: string }) {
               </select>
             </div>
 
+            {/* المادة */}
             <div>
               <label className="block mb-1 text-sm text-gray-700">
                 المادة (اختياري)
@@ -151,7 +214,6 @@ export function AddProstheticButton({ orgId }: { orgId: string }) {
               </select>
             </div>
 
-            {/* Buttons */}
             <div className="flex justify-between items-center pt-2">
               <button
                 type="button"
@@ -172,6 +234,15 @@ export function AddProstheticButton({ orgId }: { orgId: string }) {
           </form>
         </div>
       )}
+
+      {/* Duplicate Modal */}
+      <ConfirmModal
+        open={showDuplicateModal}
+        title="تحذير"
+        message="يوجد طرف صناعي بنفس الاسم والتفاصيل بالفعل."
+        onClose={() => setShowDuplicateModal(false)}
+        onConfirm={() => setShowDuplicateModal(false)}
+      />
     </div>
   );
 }

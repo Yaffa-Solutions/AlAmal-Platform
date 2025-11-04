@@ -123,17 +123,19 @@ enum RequestStatus {
 }
 
 model Prosthetic_Inventory {
-  id         Int            @id @default(autoincrement())
-  name       ProstheticType
-  details    Json?          @db.JsonB
-  is_granted Boolean         @default(false)
-  updated_at DateTime?       @updatedAt
+  id           Int            @id @default(autoincrement())
+  name         ProstheticType
+  details      Json?          @db.JsonB
+  quantity     Int             @default(1)     
+  is_granted   Boolean         @default(false)
+  updated_at   DateTime?       @updatedAt
 
-  org_id Int
-  organization Organization @relation(fields:[org_id], references:[id])
+  org_id       Int
+  organization Organization @relation(fields: [org_id], references: [id])
 
-  request Request? 
+  request      Request?
 }
+
 
 
 
