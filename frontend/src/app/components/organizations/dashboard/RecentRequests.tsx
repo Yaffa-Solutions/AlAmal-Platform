@@ -21,6 +21,7 @@ type InventoryItem = {
   id: number;
   name: string;
   details?: Record<string, unknown>;
+  quantity: number;
 };
 
 const statusArabic: Record<string, string> = {
@@ -84,7 +85,7 @@ export default function RecentRequests({ orgId }: { orgId: string }) {
 
     const sizes = Object.entries(sizeCounts).map(([size, count]) => ({
       size,
-      count,
+      count: related[0].quantity,
     }));
 
     setAvailableSizes(sizes);
@@ -115,6 +116,7 @@ export default function RecentRequests({ orgId }: { orgId: string }) {
 
   const handleConfirmGrant = async () => {
     if (!selected) return;
+
     const prosthetic = inventory.find(
       (p) =>
         p.name === selected.patient.disability_type &&
@@ -127,6 +129,7 @@ export default function RecentRequests({ orgId }: { orgId: string }) {
     }
 
     try {
+      // 1️⃣ Update the request status
       const res = await fetch(
         `${API_BASE}/api/requests/${selected.id}/status`,
         {
@@ -139,6 +142,21 @@ export default function RecentRequests({ orgId }: { orgId: string }) {
         }
       );
       if (!res.ok) throw new Error(await res.text());
+
+      // 2️⃣ Decrease prosthetic quantity
+      const newQuantity = prosthetic.quantity - 1;
+      await fetch(`${API_BASE}/api/prosthetics/update`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          oldName: prosthetic.name,
+          details: prosthetic.details,
+          newName: prosthetic.name,
+          newDetails: prosthetic.details,
+          quantity: newQuantity,
+        }),
+      });
+
       alert("تم منح الطرف وتحديث الطلب بنجاح ✅");
     } catch (err) {
       console.error(err);
@@ -246,18 +264,23 @@ export default function RecentRequests({ orgId }: { orgId: string }) {
             </div>
 
             <div className="flex justify-center gap-5 mt-6">
-              <button
-                onClick={handleGrant}
-                className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-              >
-                <UserCheck className="w-5 h-5" /> منح طرف
-              </button>
-              <button
-                onClick={() => handleDelete(selected.id)}
-                className="flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-              >
-                <Trash2 className="w-5 h-5" /> حذف الطلب
-              </button>
+              {selected.status !== "COMPLETED" ? (
+                <>
+                  <button
+                    onClick={handleGrant}
+                    className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                  >
+                    <UserCheck className="w-5 h-5" /> منح طرف
+                  </button>
+                  <button
+                    onClick={() => handleDelete(selected.id)}
+                    className="flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                  >
+                    <Trash2 className="w-5 h-5" /> حذف الطلب
+                  </button>
+                </>
+              ) : null}
+
               <button
                 onClick={handleCloseDetails}
                 className="flex items-center gap-2 bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400"

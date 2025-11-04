@@ -101,10 +101,13 @@ export default function InventoryPage() {
         body: JSON.stringify({
           name: selectedItem.name,
           details: selectedItem.details,
-          count: count || 1,
+          count: count ?? selectedItem.quantity, // if no count, delete all
         }),
       });
-      window.location.reload();
+
+      // Remove from UI immediately
+      setItems((prev) => prev.filter((i) => i.id !== selectedItem.id));
+      setShowConfirm(false);
     } catch (err) {
       console.error(err);
       alert("حدث خطأ أثناء الحذف");
@@ -285,9 +288,7 @@ export default function InventoryPage() {
           onClose={() => setShowConfirm(false)}
           onConfirm={confirmDelete}
           title="حذف الأطراف الصناعية"
-          message={`يوجد ${selectedItem.quantity} من هذا النوع. كم منها تريد حذفه؟`}
-          showCountInput={selectedItem.quantity > 1}
-          maxCount={selectedItem.quantity}
+          message={`هل أنت متأكد أنك تريد حذف هذا الطرف الصناعي؟`}
         />
       )}
 
