@@ -15,7 +15,7 @@ export const useDonationForm = () => {
     data: DonationFormData,
     campaignId: number,
     card: any,
-    stripe: any,
+    stripe: any
   ) => {
     setLoading(true);
     setError(null);
@@ -66,6 +66,25 @@ export const useDonationForm = () => {
       );
       if (paymentResult.error) {
         setError({ message: paymentResult.error.message, color: 'red' });
+        return false;
+      }
+      const createDonationRes = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/donor/confirm-donation`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            donor_id: donorId,
+            campaigns_id: campaignId,
+            amount: data.amount,
+            stripePaymentId: paymentResult.paymentIntent.id,
+          }),
+        }
+      );
+
+      if (!createDonationRes.ok) {
+        setError({ message: 'حدث خطأ أثناء تسجيل التبرع', color: 'red' });
         return false;
       }
 
