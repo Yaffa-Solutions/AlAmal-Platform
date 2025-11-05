@@ -14,9 +14,9 @@ type InventoryItem = {
   quantity: number;
   is_granted: boolean;
   updated_at: string;
-  request?: {
+  requests?: {
     patient?: { name: string };
-  };
+  }[];
 };
 
 const detailLabelArabic: Record<string, string> = {
@@ -33,19 +33,35 @@ export default function InventoryPage() {
   const [editItem, setEditItem] = useState<InventoryItem | null>(null);
   const [editName, setEditName] = useState("");
   const [editDetails, setEditDetails] = useState<Record<string, unknown>>({});
+  const [grantedItems, setGrantedItems] = useState<InventoryItem[]>([]);
+
   const { id } = useParams();
   useEffect(() => {
-    fetch(`${API_BASE}/api/organizations/${id}/recent/inventory`)
-      .then((res) => res.json())
-      .then((data) => {
-        const normalized = data.map((item: InventoryItem) => ({
-          ...item,
-          quantity: Number(item.quantity) || 0,
-        }));
-        setItems(normalized);
-        console.log(normalized);
-      })
-      .catch(console.error);
+    async function fetchData() {
+      try {
+        const [inventoryRes, grantedRes] = await Promise.all([
+          fetch(`${API_BASE}/api/prosthetics/${id}/recent/inventory`),
+          fetch(`${API_BASE}/api/prosthetics/organization/${id}/granted`),
+        ]);
+
+        const inventoryData: InventoryItem[] = await inventoryRes.json();
+        const grantedData: InventoryItem[] = await grantedRes.json();
+        console.log("grantedData", grantedData);
+
+        setItems(
+          inventoryData.map((item) => ({
+            ...item,
+            quantity: Number(item.quantity) || 0,
+          }))
+        );
+
+        setGrantedItems(grantedData);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    fetchData();
   }, [id]);
 
   function handleEditClick(item: InventoryItem) {
@@ -131,7 +147,6 @@ export default function InventoryPage() {
         }),
       });
 
-      // Update UI instantly
       setItems((prev) =>
         prev.map((p) => (p.id === item.id ? { ...p, ...updates } : p))
       );
@@ -141,13 +156,10 @@ export default function InventoryPage() {
     }
   }
 
-  const grantedItems = items.filter((i) => i.is_granted);
-
   return (
     <main dir="rtl" className="space-y-8">
       <AddProstheticButton orgId={id as string} />
 
-      {/* 🧱 Inventory Section */}
       <section>
         <h1 className="text-xl font-bold text-[#1A2954] mb-2">ملخص المخزون</h1>
         <div className="bg-white border border-[#E8ECF3] rounded-2xl overflow-hidden">
@@ -233,7 +245,6 @@ export default function InventoryPage() {
         </div>
       </section>
 
-      {/* 🧱 Granted Items Section */}
       <section>
         <h1 className="text-xl font-bold text-[#1A2954] mb-2">
           الأطراف الممنوحة
@@ -264,12 +275,17 @@ export default function InventoryPage() {
                     <td className="p-3 text-gray-700">
                       {item.details
                         ? Object.entries(item.details)
-                            .map(([k, v]) => `${k}: ${String(v)}`)
-                            .join(", ")
+                            .map(
+                              ([k, v]) =>
+                                `${detailLabelArabic[k] || k}: ${String(v)}`
+                            )
+                            .join("، ")
                         : "—"}
                     </td>
                     <td className="p-3">
-                      {item.request?.patient?.name || "N/A"}
+                      {item.requests?.length
+                        ? item.requests.map((r) => r.patient?.name).join("، ")
+                        : "—"}
                     </td>
                     <td className="p-3">
                       {new Date(item.updated_at).toLocaleString("ar-EG")}

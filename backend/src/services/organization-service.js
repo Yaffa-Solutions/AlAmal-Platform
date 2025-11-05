@@ -43,28 +43,7 @@ export const getOrganizationByUserId = (userId) => {
   });
 };
 
-export const getRecentInventoryByOrg = (orgId) => {
-  return prisma.prosthetic_Inventory.findMany({
-    where: { org_id: Number(orgId) },
-    select: {
-      id: true,
-      name: true,
-      details: true,
-      is_granted: true,
-      quantity: true,
-      updated_at: true,
-      request: {
-        select: {
-          patient: {
-            select: {
-              name: true,
-            },
-          },
-        },
-      },
-    },
-  });
-};
+
 
 export const getRecentCampaignsByOrg = (orgId, limit) => {
   return prisma.campaigns.findMany({

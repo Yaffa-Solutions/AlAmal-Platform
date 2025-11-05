@@ -62,7 +62,7 @@ export function AddProstheticButton({ orgId }: { orgId: string }) {
 
     try {
       const resInventory = await fetch(
-        `${API_BASE}/api/organizations/${orgId}/recent/inventory`
+        `${API_BASE}/api/prosthetics/${orgId}/recent/inventory`
       );
       const existingItems: InventoryItem[] = await resInventory.json();
 

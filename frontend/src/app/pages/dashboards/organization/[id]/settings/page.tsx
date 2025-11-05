@@ -28,8 +28,12 @@ export default async function OrganizationSettingsPage({
       <div className="max-w-5xl mx-auto space-y-6">
         <DashboardHeader />
         <section className="bg-white rounded-2xl border border-[#E8ECF3] p-6">
-          <h2 className="text-xl font-bold text-[#1A2954] mb-4">إعدادات المؤسسة</h2>
-          <p className="text-[#4B5563] mb-6">تفاصيل المؤسسة ومعلومات الاتصال والوثائق.</p>
+          <h2 className="text-xl font-bold text-[#1A2954] mb-4">
+            إعدادات المؤسسة
+          </h2>
+          <p className="text-[#4B5563] mb-6">
+            تفاصيل المؤسسة ومعلومات الاتصال والوثائق.
+          </p>
           <div className="space-y-6">
             <OrgInfo org={org} />
             <AddressSection org={org} />

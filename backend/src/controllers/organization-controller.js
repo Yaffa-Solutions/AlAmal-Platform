@@ -6,7 +6,6 @@ import {
   getOrganizationByUserId,
 } from "../services/organization-service.js";
 import {
-  getRecentInventoryByOrg,
   getRecentCampaignsByOrg,
   getActiveCampaignsByOrg,
 } from "../services/organization-service.js";
@@ -22,17 +21,6 @@ export const getUploadUrl = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to generate upload URL" });
-  }
-};
-
-export const getRecentInventoryHandler = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const items = await getRecentInventoryByOrg(id);
-    res.json(items);
-  } catch (err) {
-    console.error("getRecentInventoryHandler error:", err);
-    res.status(500).json({ message: "Internal server error" });
   }
 };
 

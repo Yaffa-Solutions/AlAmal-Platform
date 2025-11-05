@@ -68,7 +68,7 @@ export default function RecentRequests({ orgId }: { orgId: string }) {
     if (!selected) return;
 
     const res = await fetch(
-      `${API_BASE}/api/organizations/${orgId}/recent/inventory`
+      `${API_BASE}/api/prosthetics/${orgId}/recent/inventory`
     );
     const data: InventoryItem[] = await res.json();
     setInventory(data);

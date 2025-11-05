@@ -110,7 +110,7 @@ model Request {
 organization_id Int?
 organization    Organization? @relation(fields: [organization_id], references: [id], onDelete: SetNull)
 
-  inventory_id Int? @unique 
+  inventory_id Int? 
   inventory Prosthetic_Inventory? @relation(fields:[inventory_id], references:[id])
 }
 
@@ -133,7 +133,7 @@ model Prosthetic_Inventory {
   org_id       Int
   organization Organization @relation(fields: [org_id], references: [id])
 
-  request      Request?
+  requests  Request[]
 }
 
 

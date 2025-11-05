@@ -2,6 +2,8 @@ import {
   createProsthetic,
   deleteProsthetic,
   updateProsthetic,
+  getGrantedProstheticsByOrg,
+  getRecentInventoryByOrg,
 } from "../services/prosthetic-service.js";
 
 export const createProstheticHandler = async (req, res) => {
@@ -40,5 +42,27 @@ export const updateProstheticHandler = async (req, res) => {
   } catch (err) {
     console.error("updateProstheticHandler error:", err);
     res.status(500).json({ message: "Failed to update" });
+  }
+};
+
+export const getGrantedProstheticsHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const prosthetics = await getGrantedProstheticsByOrg(id);
+    res.status(200).json(prosthetics);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch granted prosthetics" });
+  }
+};
+
+export const getRecentInventoryHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const items = await getRecentInventoryByOrg(id);
+    res.json(items);
+  } catch (err) {
+    console.error("getRecentInventoryHandler error:", err);
+    res.status(500).json({ message: "Internal server error" });
   }
 };

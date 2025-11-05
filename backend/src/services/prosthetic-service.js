@@ -60,3 +60,47 @@ export const updateProsthetic = async (
     },
   });
 };
+
+export const getGrantedProstheticsByOrg = async (orgId) => {
+  return prisma.prosthetic_Inventory.findMany({
+    where: {
+      org_id: Number(orgId),
+      requests: {
+        some: {},
+      },
+    },
+    include: {
+      requests: {
+        include: {
+          patient: true,
+        },
+      },
+    },
+    orderBy: {
+      updated_at: "desc",
+    },
+  });
+};
+
+export const getRecentInventoryByOrg = (orgId) => {
+  return prisma.prosthetic_Inventory.findMany({
+    where: { org_id: Number(orgId) },
+    select: {
+      id: true,
+      name: true,
+      details: true,
+      is_granted: true,
+      quantity: true,
+      updated_at: true,
+      requests: {
+        select: {
+          patient: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+    },
+  });
+};
