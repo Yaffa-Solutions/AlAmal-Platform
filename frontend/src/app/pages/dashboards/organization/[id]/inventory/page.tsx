@@ -35,7 +35,7 @@ export default function InventoryPage() {
   const [editItem, setEditItem] = useState<InventoryItem | null>(null);
   const [editName, setEditName] = useState("");
   const [editDetails, setEditDetails] = useState<Record<string, unknown>>({});
-  const [grantedItems, setGrantedItems] = useState<InventoryItem[]>([]);
+  const [grantedItems, setGrantedItems] = useState<GrantedItem[]>([]);
 
   const { id } = useParams();
   useEffect(() => {
