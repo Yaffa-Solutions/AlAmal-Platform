@@ -279,7 +279,10 @@ export default function InventoryPage() {
                 </tr>
               ) : (
                 grantedItems.map((item, index) => (
-                  <tr key={item.id} className="border-t border-[#E8ECF3]">
+                  <tr
+                    key={`${item.id}-${index}`} // ✅ unique key
+                    className="border-t border-[#E8ECF3]"
+                  >
                     <td className="p-3">{index + 1}</td>
                     <td className="p-3">{item.name}</td>
                     <td className="p-3 text-gray-700">
