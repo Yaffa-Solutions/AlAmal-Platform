@@ -19,6 +19,8 @@ type InventoryItem = {
   }[];
 };
 
+type GrantedItem = InventoryItem & { patientName: string };
+
 const detailLabelArabic: Record<string, string> = {
   size: "الحجم",
   color: "اللون",
@@ -55,7 +57,17 @@ export default function InventoryPage() {
           }))
         );
 
-        setGrantedItems(grantedData);
+        // ✅ Flatten grantedData
+        const flattenedGrantedItems = grantedData.flatMap((item) =>
+          item.requests && item.requests.length > 0
+            ? item.requests.map((r) => ({
+                ...item,
+                patientName: r.patient?.name || "—",
+              }))
+            : [{ ...item, patientName: "—" }]
+        );
+
+        setGrantedItems(flattenedGrantedItems);
       } catch (err) {
         console.error(err);
       }
@@ -170,7 +182,6 @@ export default function InventoryPage() {
                 <th className="text-right p-3">النوع</th>
                 <th className="text-right p-3">التفاصيل</th>
                 <th className="text-right p-3">الكمية</th>
-                <th className="text-right p-3">تم منحه</th>
                 <th className="text-right p-3">آخر تحديث</th>
                 <th className="text-right p-3">إجراءات</th>
               </tr>
@@ -218,7 +229,6 @@ export default function InventoryPage() {
                         <Plus size={14} />
                       </button>
                     </td>
-                    <td className="p-3">{it.is_granted ? "نعم" : "لا"}</td>
                     <td className="p-3">
                       {new Date(it.updated_at).toLocaleString("ar-EG")}
                     </td>
@@ -282,11 +292,7 @@ export default function InventoryPage() {
                             .join("، ")
                         : "—"}
                     </td>
-                    <td className="p-3">
-                      {item.requests?.length
-                        ? item.requests.map((r) => r.patient?.name).join("، ")
-                        : "—"}
-                    </td>
+                    <td className="p-3">{item.patientName}</td>
                     <td className="p-3">
                       {new Date(item.updated_at).toLocaleString("ar-EG")}
                     </td>
