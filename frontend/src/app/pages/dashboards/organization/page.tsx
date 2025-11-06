@@ -14,7 +14,7 @@ export default function OrganizationDashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const id = localStorage.getItem("id");
+    const id = localStorage.getItem("orgId");
     if (!id) return;
 
     const fetchOrg = async () => {

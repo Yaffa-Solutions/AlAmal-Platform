@@ -37,7 +37,7 @@ export default async function OrganizationSettingsPage({
           <div className="space-y-6">
             <OrgInfo org={org} />
             <AddressSection org={org} />
-            <DocumentsSection org={org} />
+            <DocumentsSection orgId={org.id?.toString() || ""} />
           </div>
         </section>
       </div>

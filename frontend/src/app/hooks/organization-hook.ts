@@ -106,6 +106,7 @@ export default function useOrganizationForm() {
       );
       setSuccess(created);
       if (created?.id) {
+        localStorage.setItem("orgId", created?.id.toString());
         router.push(`/pages/dashboards/organization`);
       }
       setName("");

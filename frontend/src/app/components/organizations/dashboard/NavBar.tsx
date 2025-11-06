@@ -1,12 +1,26 @@
 "use client";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 type Props = { orgId: string; orgName?: string };
 
 export default function NavBar({ orgId, orgName = "المؤسسة" }: Props) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
+  const router = useRouter();
+
+  const logout = async () => {
+    localStorage.removeItem("id");
+    localStorage.removeItem("role");
+    localStorage.removeItem("username");
+    localStorage.removeItem("status");
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+    router.push("/pages/auth/login");
+  };
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
@@ -71,7 +85,7 @@ export default function NavBar({ orgId, orgName = "المؤسسة" }: Props) {
                 <button
                   className="w-full text-right px-3 py-2 rounded-lg text-sm text-[#DC2626] hover:bg-[#FEF2F2]"
                   onClick={() => {
-                    /* TODO: wire real logout */
+                    logout();
                   }}
                 >
                   تسجيل الخروج

@@ -14,15 +14,15 @@ export default function DashboardLayout({
   const [orgName, setOrgName] = useState<string>("المؤسسة");
 
   useEffect(() => {
-    const id = localStorage.getItem("id");
+    const id = localStorage.getItem("orgId");
     if (!id) return;
     setOrgId(id);
 
-    fetch(`${API_BASE}/api/organizations/${id}`)
+    fetch(`${API_BASE}/api/organizations/${orgId}`)
       .then((res) => res.json())
       .then((data) => setOrgName(data.name || "المؤسسة"))
       .catch(() => {});
-  }, []);
+  }, [orgId]);
 
   if (!orgId) return <div>Loading...</div>;
 
