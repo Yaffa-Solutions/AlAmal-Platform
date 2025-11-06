@@ -1,4 +1,5 @@
-type Patient = {
+export type Patient = {
+  id:number;
   user_id ?: number;
   name: string;
   Phone: string;

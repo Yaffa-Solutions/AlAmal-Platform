@@ -103,7 +103,6 @@ model Request {
   status     RequestStatus @default(PENDING)
   created_at DateTime      @default(now())
   updated_at DateTime      @updatedAt
-
   patient_id Int
   patient    Patient @relation(fields: [patient_id], references: [id])
 

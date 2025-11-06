@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { Toaster } from 'sonner';
 
-import usePatientForm from '@/app/hooks/patient-hook';
+import {usePatientForm} from '@/app/hooks/patient-hook';
 
 export default function PatientForm() {
   const {
@@ -26,7 +26,7 @@ export default function PatientForm() {
     onSubmit,
     prosthetic,
     dropdownOpen , cities ,  genders , setDropdownOpen , selectedCity , selectedGender
-     , selectedProsthetic , setSelectedCity , setSelectedGender , setSelectedProsthetic
+     , selectedProsthetic , setSelectedCity , setSelectedGender , setSelectedProsthetic , submitting
   } = usePatientForm();
 
 
@@ -69,7 +69,7 @@ export default function PatientForm() {
                     type="number"
                     placeholder="25"
                     className="mt-1 w-full border rounded-lg px-3 py-2 text-right"
-                    {...register('age')}
+                    {...register('age',{valueAsNumber:true})}
                   />
                   {errors.age && <p className="text-red-500 text-xs mt-1">{errors.age.message}</p>}
                 </div>
@@ -159,7 +159,7 @@ export default function PatientForm() {
                     onClick={() => {
                       const newValue = Math.max(0, disabilityPercentage - 1);
                       setDisabilityPercentage(newValue);
-                      setValue('disability_percentage', newValue.toString(), { shouldValidate: true });
+                      setValue('disability_percentage', newValue, { shouldValidate: true });
                     }}
                   >
                     <Minus className="h-3 w-3" />
@@ -170,14 +170,14 @@ export default function PatientForm() {
                     min={0}
                     max={100}
                     className="flex-1 text-center border rounded-lg py-1.5"
-                    {...register('disability_percentage')}
+                    {...register('disability_percentage' , {valueAsNumber:true})}
                     value={disabilityPercentage}
                     onChange={(e) => {
                       let val = Number(e.target.value);
                       if (val < 0) val = 0;
                       if (val > 100) val = 100;
                       setDisabilityPercentage(val);
-                      setValue('disability_percentage', val.toString(), { shouldValidate: true });
+                      setValue('disability_percentage', val, { shouldValidate: true });
                     }}
                   />
 
@@ -187,7 +187,7 @@ export default function PatientForm() {
                     onClick={() => {
                       const newValue = Math.min(100, disabilityPercentage + 1);
                       setDisabilityPercentage(newValue);
-                      setValue('disability_percentage', newValue.toString(), { shouldValidate: true });
+                      setValue('disability_percentage', newValue, { shouldValidate: true });
                     }}
                   >
                     <Plus className="h-3 w-3" />
@@ -328,9 +328,10 @@ export default function PatientForm() {
 
             <button
               type="submit"
+              disabled={submitting}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 text-lg rounded-lg"
             >
-              إرسال الطلب
+            {submitting ? 'جار الإرسال ... ': 'إرسال الطلب'}
             </button>
 
             <p className="text-center text-xs text-blue-600">
