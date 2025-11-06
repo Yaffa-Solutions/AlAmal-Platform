@@ -12,10 +12,9 @@ export type Organization = {
   phone?: string;
   type?: string;
   address: Address;
-  userId?: number; // frontend naming
-  user_id?: number; // backend naming
-  registrationCertificate: string; // server path/url
-  professionalLicense: string; // server path/url
+  user_id?: number;
+  registrationCertificate: string;
+  professionalLicense: string;
   createdAt?: string;
   updatedAt?: string;
   created_at?: string;
