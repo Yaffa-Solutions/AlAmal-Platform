@@ -3,9 +3,14 @@ import {
   createCampaign,
   updateCampaign,
   deleteCampaign,
+  getRecentCampaignsByOrg,
+  getActiveCampaignsByOrg,
 } from "../services/campaign-service.js";
 
-import { generatePresignedUrl } from "../services/s3-service.js";
+import {
+  generatePresignedUrl,
+  getSignedUrlForFile,
+} from "../services/s3-service.js";
 
 export const getCampaignUploadUrl = async (req, res) => {
   try {
@@ -23,14 +28,56 @@ export const getCampaignUploadUrl = async (req, res) => {
   }
 };
 
+export const getRecentCampaignsHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { limit } = req.query;
+    const items = await getRecentCampaignsByOrg(id, limit ?? 5);
+    res.json(items);
+  } catch (err) {
+    console.error("getRecentCampaignsHandler error:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export async function getActiveCampaignsHandler(req, res) {
+  try {
+    const orgId = req.params.id;
+    const limit = parseInt(req.query.limit) || 3;
+
+    const campaigns = await getActiveCampaignsByOrg(orgId, limit);
+
+    const withUrls = await Promise.all(
+      campaigns.map(async (c) => ({
+        ...c,
+        imageUrl: c.image ? await getSignedUrlForFile(c.image) : null,
+      }))
+    );
+
+    res.json(withUrls);
+  } catch (err) {
+    console.error("Error fetching active campaigns:", err);
+    res.status(500).json({ message: "خطأ في استرجاع الحملات" });
+  }
+}
 export const getCampaignsHandler = async (req, res) => {
   try {
     const orgId = req.params.orgId;
+    console.log("req.params", req.params);
+
     const campaigns = await getRecentCampaigns(orgId);
-    res.json(campaigns);
+
+    const campaignsWithUrls = await Promise.all(
+      campaigns.map(async (c) => ({
+        ...c,
+        imageUrl: c.image ? await getSignedUrlForFile(c.image) : null,
+      }))
+    );
+
+    res.json(campaignsWithUrls);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("❌ Error fetching campaigns:", err);
+    res.status(500).json({ message: "خطأ في جلب الحملات" });
   }
 };
 

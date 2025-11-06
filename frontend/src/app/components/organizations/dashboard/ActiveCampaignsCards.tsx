@@ -22,7 +22,7 @@ export default function ActiveCampaignsCards({ orgId }: { orgId: string }) {
     const getActive = async () => {
       try {
         const res = await fetch(
-          `${API_BASE}/api/organizations/${orgId}/active/campaigns?limit=3`,
+          `${API_BASE}/api/campaigns/${orgId}/active/campaigns?limit=3`,
           { cache: "no-store" }
         );
         if (!res.ok) throw new Error("Failed to load campaigns");

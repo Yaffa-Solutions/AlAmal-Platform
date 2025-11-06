@@ -18,11 +18,11 @@ export default function DashboardLayout({
     if (!id) return;
     setOrgId(id);
 
-    fetch(`${API_BASE}/api/organizations/${orgId}`)
+    fetch(`${API_BASE}/api/organizations/${id}`)
       .then((res) => res.json())
       .then((data) => setOrgName(data.name || "المؤسسة"))
       .catch(() => {});
-  }, [orgId]);
+  }, []);
 
   if (!orgId) return <div>Loading...</div>;
 

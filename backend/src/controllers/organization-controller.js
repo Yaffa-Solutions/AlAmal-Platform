@@ -1,13 +1,12 @@
 import { createOrganization } from "../services/organization-service.js";
-import { generatePresignedUrl } from "../services/s3-service.js";
+import {
+  generatePresignedUrl,
+  getSignedUrlForFile,
+} from "../services/s3-service.js";
 import { z } from "zod";
 import {
   getOrganizationById,
   getOrganizationByUserId,
-} from "../services/organization-service.js";
-import {
-  getRecentCampaignsByOrg,
-  getActiveCampaignsByOrg,
 } from "../services/organization-service.js";
 
 export const getUploadUrl = async (req, res) => {
@@ -24,33 +23,10 @@ export const getUploadUrl = async (req, res) => {
   }
 };
 
-export const getRecentCampaignsHandler = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { limit } = req.query;
-    const items = await getRecentCampaignsByOrg(id, limit ?? 5);
-    res.json(items);
-  } catch (err) {
-    console.error("getRecentCampaignsHandler error:", err);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
-
-export const getActiveCampaignsHandler = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { limit } = req.query;
-    const items = await getActiveCampaignsByOrg(id, limit ?? 3);
-    res.json(items);
-  } catch (err) {
-    console.error("getActiveCampaignsHandler error:", err);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
-
 export const getOrgByIdHandler = async (req, res) => {
   try {
     const { id } = req.params;
+
     const org = await getOrganizationById(id);
     if (!org)
       return res.status(404).json({ message: "Organization not found" });
@@ -134,5 +110,31 @@ export const getOrgByUserHandler = async (req, res) => {
   } catch (error) {
     console.error("Error fetching organization by user ID:", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getOrgDocumentsHandler = async (req, res) => {
+  try {
+    const orgId = req.params.id;
+    const org = await getOrganizationById(orgId);
+
+    if (!org) {
+      return res.status(404).json({ message: "لم يتم العثور على المؤسسة" });
+    }
+
+    console.log("✅ Org fetched:", org);
+
+    const registrationUrl = org.registrationCertificate
+      ? await getSignedUrlForFile(org.registrationCertificate)
+      : null;
+
+    const licenseUrl = org.professionalLicense
+      ? await getSignedUrlForFile(org.professionalLicense)
+      : null;
+
+    res.json({ registrationUrl, licenseUrl });
+  } catch (err) {
+    console.error("❌ Error while fetching org documents:", err);
+    res.status(500).json({ message: "خطأ في استرجاع الوثائق" });
   }
 };

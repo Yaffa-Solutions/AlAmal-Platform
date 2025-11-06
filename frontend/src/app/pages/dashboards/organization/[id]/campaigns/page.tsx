@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 type CampaignItem = {
   id: number;
   image: string;
+  imageUrl?: string;
   title: string;
   description: string;
   target_amount: number;
@@ -27,7 +28,6 @@ export default function CampaignsPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Fetch campaigns
   useEffect(() => {
     async function fetchCampaigns() {
       console.log(params);
@@ -37,7 +37,7 @@ export default function CampaignsPage() {
       setItems(data);
     }
     fetchCampaigns();
-  }, [params.id]);
+  }, [params]);
 
   // Close modal when clicking outside
   useEffect(() => {
@@ -128,7 +128,7 @@ export default function CampaignsPage() {
   return (
     <main dir="rtl" className="p-4 space-y-4">
       <button
-        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+        className="bg-[#1A2954] text-white px-4 py-2 rounded-xl hover:bg-[#22356b]"
         onClick={() => setShowForm(true)}
       >
         إضافة حملة جديدة
@@ -226,13 +226,20 @@ export default function CampaignsPage() {
                   onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
                   className="border p-2 rounded w-full"
                 />
-                {selectedFile && (
+
+                {selectedFile ? (
                   <img
                     src={URL.createObjectURL(selectedFile)}
                     alt="preview"
                     className="mt-2 h-24 w-full object-cover rounded"
                   />
-                )}
+                ) : formData.imageUrl ? (
+                  <img
+                    src={formData.imageUrl}
+                    alt="current"
+                    className="mt-2 h-24 w-full object-cover rounded"
+                  />
+                ) : null}
               </div>
 
               <div>

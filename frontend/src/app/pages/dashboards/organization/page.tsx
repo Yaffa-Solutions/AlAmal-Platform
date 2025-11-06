@@ -14,12 +14,14 @@ export default function OrganizationDashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const id = localStorage.getItem("orgId");
-    if (!id) return;
+    const orgId = localStorage.getItem("orgId");
+    if (!orgId) return;
 
     const fetchOrg = async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/organizations/${id}`);
+        console.log("orgId", orgId);
+
+        const res = await fetch(`${API_BASE}/api/organizations/${orgId}`);
         if (!res.ok) throw new Error("Failed to fetch organization");
         const data = await res.json();
         setOrg(data);

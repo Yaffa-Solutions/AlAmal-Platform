@@ -23,3 +23,19 @@ export const deleteCampaign = async (id) => {
     where: { id: Number(id) },
   });
 };
+
+export const getRecentCampaignsByOrg = (orgId, limit) => {
+  return prisma.campaigns.findMany({
+    where: { org_id: Number(orgId) },
+    orderBy: { start_date: "desc" },
+    take: Number(limit),
+  });
+};
+
+export const getActiveCampaignsByOrg = (orgId, limit = 3) => {
+  return prisma.campaigns.findMany({
+    where: { org_id: Number(orgId), status: "ACTIVE" },
+    orderBy: { start_date: "desc" },
+    take: Number(limit),
+  });
+};
