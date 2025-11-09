@@ -7,11 +7,6 @@ import { API_BASE, postForm, putForm } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import { Patient } from '@/types/patient';
 
-//////////ضايل افحص اذا المريض رجع يدخل بياناته كمان مرة ترجع ايرور انت مدخل بياناتك روح فوت
-////في حال مش مسجل بياناته المريض و بدو يروح عالداشبورد يروح على صفحة تسجيل دخول
-////في الاشعارات بنحط تاربخ الابدبت
-//// وين احط ال date for created request or updated_at when change the status from organization
-
 export function usePatientForm() {
   const router = useRouter();
   const [disabilityPercentage, setDisabilityPercentage] = useState(0);
@@ -237,7 +232,6 @@ export function useUpdatePatientForm() {
 
   const onSubmit = (data: PatientFormData) => {
     setSubmitting(true);
-
     const handleUpdate = (key?: string) => {
       const payload = {
         ...data,
