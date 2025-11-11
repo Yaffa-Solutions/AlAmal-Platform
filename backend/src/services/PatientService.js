@@ -1,6 +1,8 @@
 import prisma from '../config/db.js';
 
 export const createPatient = (data) => {
+ console.log(data);
+ 
   return prisma.patient
     .create({
       data: data,

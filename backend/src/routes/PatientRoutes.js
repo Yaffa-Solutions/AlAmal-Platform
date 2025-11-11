@@ -8,7 +8,7 @@ import { authenticateToken } from '../middlewares/authToken.js';
 const router= express.Router();
 
 router.post("/upload-patient-files", getUploadUrl);
-router.post('/register',validate(patientSchema),AddPatient );
+router.post('/register',  authenticateToken,validate(patientSchema),AddPatient );
 router.get('/prosthetic' , GetAllProsthetic);
 
 router.get('/requestDetails',authenticateToken ,GetRequestDetails);

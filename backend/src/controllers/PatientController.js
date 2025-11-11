@@ -18,7 +18,6 @@ export const getUploadUrl = (req, res, next) => {
 
 export const AddPatient = (req, res, next) => {
   const {
-    user_id,
     name,
     Phone,
     age,
@@ -28,6 +27,8 @@ export const AddPatient = (req, res, next) => {
     disability_percentage,
     medical_reports_url,
   } = req.body;
+
+  const user_id=req.user.id;
 
   createPatient({
     user_id,
