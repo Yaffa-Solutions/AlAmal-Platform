@@ -33,7 +33,7 @@ export const useCampigns = () => {
         );
         if (!res.ok) throw new Error('فشل في جلب الحملات');
         const data = await res.json();
-        setCampaigns(data.campaigns);
+        setCampaigns(data);
       } catch (err: any) {
         console.error(err.message);
       } finally {

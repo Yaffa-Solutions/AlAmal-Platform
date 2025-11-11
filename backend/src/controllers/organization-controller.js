@@ -30,7 +30,13 @@ export const createOrgHandler = async (req, res) => {
     const OrganizationCreateSchema = z.object({
       name: z.string({ required_error: "name is required" }).min(1),
       type: z.string({ required_error: "type is required" }),
-      phone: z.string().min(1, "phone is required"),
+      phone: z
+        .string()
+        .min(8, "Phone must be at least 8 digits")
+        .regex(
+          /^[+0-9\s-]+$/,
+          "Phone number can only contain digits, +, -, and spaces"
+        ),
       address: AddressSchema,
       registration_certificate_key: z.string().optional(),
       professional_license_key: z.string().optional(),

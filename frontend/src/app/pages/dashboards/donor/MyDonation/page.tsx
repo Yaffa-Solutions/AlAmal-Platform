@@ -3,36 +3,6 @@ import React from 'react';
 import { useMyDonations } from '@/app/hooks/useMyDonations';
 import DonationTableSkeleton from '@/app/components/donationTableSkelton';
 
-interface DonationRecord {
-  campaign: string;
-  date: string;
-  amount: number;
-  paymentMethod: string;
-}
-
-
-// const fakeDonations: DonationRecord[] = [
-//   {
-//     campaign: 'حملة الأطراف المتقدمة',
-//     date: '9-9-2025',
-//     amount: 300,
-//     paymentMethod: 'بطاقة ائتمان',
-//   },
-//   {
-//     campaign: 'حملة الأطراف المتقدمة',
-//     date: '10-9-2025',
-//     amount: 150,
-//     paymentMethod: 'PayPal',
-//   },
-//   {
-//     campaign: 'حملة الأطراف المتقدمة',
-//     date: '11-9-2025',
-//     amount: 500,
-//     paymentMethod: 'بطاقة ائتمان',
-//   },
-  
-// ];
-
 export default function MyDonation() {
   const { donations, loading } = useMyDonations();
 
