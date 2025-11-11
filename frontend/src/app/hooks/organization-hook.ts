@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { postForm } from "@/lib/api";
 import type { Address, Organization } from "@/types/organization";
 import { API_BASE } from "@/lib/api";
@@ -20,7 +20,6 @@ export default function useOrganizationForm() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<Organization | null>(null);
 
-  // Zod schemas for client-side validation
   const AddressSchema = z
     .object({
       city: z.string().optional(),
@@ -32,9 +31,36 @@ export default function useOrganizationForm() {
   const FormSchema = z.object({
     name: z.string().min(1, "name is required"),
     type: z.string().min(1, "type is required"),
-    phone: z.string().min(1, "phone is required"),
+    phone: z
+      .string()
+      .min(8, "Phone must be at least 8 digits")
+      .regex(
+        /^[+0-9\s-]+$/,
+        "Phone number can only contain digits, +, -, and spaces"
+      ),
+
     address: AddressSchema,
   });
+
+  function isAllowedFile(file: File) {
+    const mime = (file.type || "").toLowerCase();
+    if (mime.startsWith("image/")) return true;
+    if (mime === "application/pdf") return true;
+    if (mime === "application/msword") return true;
+    if (
+      mime ===
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    )
+      return true;
+
+    const name = file.name.toLowerCase();
+    if (name.endsWith(".pdf")) return true;
+    if (name.endsWith(".doc")) return true;
+    if (name.endsWith(".docx")) return true;
+    if (name.match(/\.(png|jpg|jpeg|gif|bmp|webp|svg|tiff|ico)$/)) return true;
+
+    return false;
+  }
 
   async function uploadFileToS3(file: File) {
     const { url, key } = await fetch(
@@ -60,38 +86,47 @@ export default function useOrganizationForm() {
     e.preventDefault();
     setError(null);
     setSuccess(null);
-
-    const validated = FormSchema.safeParse({ name, type, phone, address });
-    if (!validated.success) {
-      const first = validated.error.issues?.[0];
-      setError(first?.message || "Invalid form data");
-      return;
-    }
-
-    if (!registrationCertificate || !professionalLicense) {
-      setError("Both certificates are required");
-      return;
-    }
-
-    const registrationKey = await uploadFileToS3(registrationCertificate);
-    const licenseKey = await uploadFileToS3(professionalLicense);
-
-    const payload = {
-      name,
-      phone,
-      user_id: 1,
-      type,
-      address,
-      registration_certificate_key: registrationKey,
-      professional_license_key: licenseKey,
-    };
-
     setSubmitting(true);
+
     try {
+      const validated = FormSchema.safeParse({ name, type, phone, address });
+      if (!validated.success) {
+        const first = validated.error.issues?.[0];
+        setError(first?.message || "Invalid form data");
+        return;
+      }
+
+      if (!registrationCertificate || !professionalLicense) {
+        setError("Both certificates are required");
+        return;
+      }
+
+      if (
+        !isAllowedFile(registrationCertificate) ||
+        !isAllowedFile(professionalLicense)
+      ) {
+        setError("Files must be images, PDF, or Word documents (.doc, .docx)");
+        return;
+      }
+
+      const registrationKey = await uploadFileToS3(registrationCertificate);
+      const licenseKey = await uploadFileToS3(professionalLicense);
+
+      const payload = {
+        name,
+        phone,
+        user_id: 1,
+        type,
+        address,
+        registration_certificate_key: registrationKey,
+        professional_license_key: licenseKey,
+      };
+
       const created = await postForm<Organization>(
         "/api/organizations",
         payload
       );
+
       setSuccess(created);
       setName("");
       setPhone("");
@@ -99,12 +134,30 @@ export default function useOrganizationForm() {
       setAddress({});
       setRegistrationCertificate(null);
       setProfessionalLicense(null);
+      localStorage.removeItem("organizationDraft");
     } catch {
       setError("Failed to create organization");
     } finally {
       setSubmitting(false);
     }
   }
+
+  function saveDraftLocally() {
+    const draft = { name, phone, type, address };
+    localStorage.setItem("organizationDraft", JSON.stringify(draft));
+    alert("تم حفظ المسودة  ✅");
+  }
+
+  useEffect(() => {
+    const draft = localStorage.getItem("organizationDraft");
+    if (draft) {
+      const data = JSON.parse(draft);
+      setName(data.name || "");
+      setPhone(data.phone || "");
+      setType(data.type || "");
+      setAddress(data.address || {});
+    }
+  }, []);
 
   return {
     name,
@@ -116,6 +169,7 @@ export default function useOrganizationForm() {
     submitting,
     error,
     success,
+    saveDraftLocally,
 
     setName,
     setPhone,
