@@ -11,7 +11,12 @@ export const useDonationForm = () => {
   const [error, setError] = useState<ErrorState | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleDonate = async (data: DonationFormData, campaignId: number) => {
+  const handleDonate = async (
+    data: DonationFormData,
+    campaignId: number,
+    card: any,
+    stripe: any
+  ) => {
     setLoading(true);
     setError(null);
 
@@ -22,12 +27,27 @@ export const useDonationForm = () => {
       return false;
     }
 
+    const donorId = Number(localStorage.getItem('id'));
+    if (!donorId) {
+      setError({ message: 'تعذر الحصول على بيانات المتبرع', color: 'red' });
+      setLoading(false);
+      return false;
+    }
+
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/donate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ campaigns_id: campaignId, amount: data.amount }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/donor/create-payment`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            donor_id: donorId,
+            campaigns_id: campaignId,
+            amount: data.amount,
+          }),
+        }
+      );
 
       const result = await res.json();
 
@@ -36,6 +56,35 @@ export const useDonationForm = () => {
           message: result.error || 'حدث خطأ أثناء التبرع',
           color: 'red',
         });
+        return false;
+      }
+      const paymentResult = await stripe.confirmCardPayment(
+        result.clientSecret,
+        {
+          payment_method: { card },
+        }
+      );
+      if (paymentResult.error) {
+        setError({ message: paymentResult.error.message, color: 'red' });
+        return false;
+      }
+      const createDonationRes = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/donor/confirm-donation`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            donor_id: donorId,
+            campaigns_id: campaignId,
+            amount: data.amount,
+            stripePaymentId: paymentResult.paymentIntent.id,
+          }),
+        }
+      );
+
+      if (!createDonationRes.ok) {
+        setError({ message: 'حدث خطأ أثناء تسجيل التبرع', color: 'red' });
         return false;
       }
 
