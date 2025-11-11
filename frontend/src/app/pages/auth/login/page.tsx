@@ -1,9 +1,9 @@
-"use client";
-import React, { useState, useRef } from "react";
-import { useOTP } from "../../../hooks/useOTP";
-import { useMagicLink } from "../../../hooks/useMagicLink";
-import { Mail, ShieldCheck } from "lucide-react";
-import ResendOTPButton from "../../../components/ResendOTPButton";
+'use client';
+import React, { useState, useRef, useEffect } from 'react';
+import { useOTP } from '../../../hooks/useOTP';
+import { useMagicLink } from '../../../hooks/useMagicLink';
+import { Mail, ShieldCheck } from 'lucide-react';
+import ResendOTPButton from '../../../components/ResendOTPButton';
 
 export default function Login() {
   const [email, setEmail] = useState<string>("");
@@ -24,6 +24,12 @@ export default function Login() {
   );
 
   useMagicLink(setError);
+
+  useEffect(() => {
+    if (code.every((num) => num !== '')) {
+      document.getElementById('confirm-btn')?.click();
+    }
+  }, [code]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -145,7 +151,8 @@ export default function Login() {
           />
 
           <button
-            disabled={code.some((num) => num === "")}
+            id="confirm-btn"
+            disabled={code.some((num) => num === '')}
             onClick={handleVerify}
             className={`w-86 bg-[#3B82F6] text-white font-medium py-2 rounded-lg hover:bg-[#2563EB] transition-all duration-200
               ${
