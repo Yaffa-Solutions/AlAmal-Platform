@@ -166,6 +166,8 @@ model Donations {
   id         Int      @id @default(autoincrement())
   amount     Int
   donated_at DateTime @default(now())
+  paymentMethod String
+  stripePaymentId String?
 
   donor_id Int
   donor    Donor @relation(fields: [donor_id], references: [id])
@@ -173,7 +175,12 @@ model Donations {
   campaigns_id Int
   campaigns    Campaigns @relation(fields: [campaigns_id], references: [id])
 }
+enum DonationStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
 
+}
 
 model Donor {
   id         Int @id @default(autoincrement())

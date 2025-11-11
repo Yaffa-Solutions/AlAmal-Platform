@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { X, CircleCheck, Loader2 } from 'lucide-react';
 import { useDonationForm } from '../hooks/useDonation';
 import { DonationFormData } from '../validation/donation';
+import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
 interface DonateModalProps {
   isOpen: boolean;
@@ -19,30 +20,30 @@ export default function DonationModal({
 }: DonateModalProps) {
   const [method, setMethod] = useState<'card' | 'paypal'>('card');
   const [amount, setAmount] = useState<number | ''>('');
-  const [cardNumber, setCardNumber] = useState('');
-  const [cvv, setCvv] = useState('');
-  const [expiry, setExpiry] = useState('');
-
-  const { error, loading, handleDonate } = useDonationForm();
+  const { error, setError, loading, handleDonate } = useDonationForm();
+  const stripe = useStripe();
+  const elements = useElements();
 
   if (!isOpen) return null;
 
   const onSubmit = async () => {
-    const data: DonationFormData = {
-      amount: Number(amount),
-      cardNumber,
-      cvv,
-      expiry,
-    };
+    if (!stripe || !elements) return;
 
-    const success = await handleDonate(data, campaignId);
-    if (success) {
-      setAmount('');
-      setCardNumber('');
-      setCvv('');
-      setExpiry('');
-      onClose();
+    const card = elements.getElement(CardElement);
+    if (!card) {
+      setError({ message: 'الرجاء إدخال معلومات البطاقة', color: 'red' });
+      return;
     }
+
+    const data: DonationFormData = { amount: Number(amount) };
+    const success = await handleDonate(data, campaignId, card, stripe);
+    if (!success) return;
+    setError({ message: 'تم التبرع بنجاح!', color: 'green' });
+    setTimeout(() => {
+      setAmount('');
+      onClose();
+    }, 2000);
+    window.location.reload();
   };
 
   return (
@@ -125,46 +126,16 @@ export default function DonationModal({
         </div>
 
         {method === 'card' && (
-          <div className="space-y-3 mb-2">
+          <div className="mb-4">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              رقم البطاقة{' '}
+              معلومات البطاقة
             </label>
-            <input
-              type="text"
-              placeholder="رقم البطاقة"
-              value={cardNumber}
-              onChange={(e) => setCardNumber(e.target.value)}
-              className="w-full border text-gray-700 border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#3B82F6] focus:outline-none"
-            />
-            <div className="flex gap-4">
-              <div className="flex-1">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
-                  CVV
-                </label>
-                <input
-                  type="text"
-                  placeholder="CVV"
-                  value={cvv}
-                  onChange={(e) => setCvv(e.target.value)}
-                  className="w-full border text-gray-700 border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#3B82F6] focus:outline-none"
-                />
-              </div>
-
-              <div className="flex-1">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
-                  تاريخ الانتهاء
-                </label>
-                <input
-                  type="text"
-                  placeholder="mm/yy"
-                  value={expiry}
-                  onChange={(e) => setExpiry(e.target.value)}
-                  className="w-full border text-gray-700 border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#3B82F6] focus:outline-none"
-                />
-              </div>
+            <div className="border rounded-lg p-2">
+              <CardElement options={{ hidePostalCode: true }} />
             </div>
           </div>
         )}
+
         {error && (
           <p
             className={`text-sm mt-2 ${
@@ -179,10 +150,10 @@ export default function DonationModal({
           <button
             onClick={onSubmit}
             disabled={loading}
-            className="flex-1 bg-[#0478D4] text-white py-2 rounded-lg hover:bg-[#0368b8] transition"
+            className="flex-1 flex items-center justify-center bg-[#0478D4] text-white py-2 rounded-lg hover:bg-[#0368b8]  text-center transition"
           >
             {loading ? (
-              <Loader2 className="animate-spin w-5 h-5" />
+              <Loader2 className="animate-spin w-5 h-5 text-center" />
             ) : (
               'إتمام التبرع'
             )}
