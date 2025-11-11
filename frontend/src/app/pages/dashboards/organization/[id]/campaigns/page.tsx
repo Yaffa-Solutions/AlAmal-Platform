@@ -24,7 +24,9 @@ export default function CampaignsPage() {
   const [selectedCampaign, setSelectedCampaign] = useState<CampaignItem | null>(
     null
   );
-  const [formData, setFormData] = useState<Partial<CampaignItem>>({});
+  const [formData, setFormData] = useState<Partial<CampaignItem>>({
+    collected_amount: 0,
+  });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -107,6 +109,7 @@ export default function CampaignsPage() {
       ...formData,
       org_id: Number(orgId),
       image: imageKey,
+      collected_amount: 0,
     };
 
     const url = selectedCampaign
@@ -253,21 +256,6 @@ export default function CampaignsPage() {
                     setFormData({
                       ...formData,
                       target_amount: Number(e.target.value),
-                    })
-                  }
-                  className="border p-2 rounded w-full"
-                />
-              </div>
-
-              <div>
-                <label className="block mb-1 font-medium">المبلغ المجمّع</label>
-                <input
-                  type="number"
-                  value={formData.collected_amount || 0}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      collected_amount: Number(e.target.value),
                     })
                   }
                   className="border p-2 rounded w-full"

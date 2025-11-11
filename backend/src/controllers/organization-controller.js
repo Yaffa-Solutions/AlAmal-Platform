@@ -119,7 +119,7 @@ export const getOrgDocumentsHandler = async (req, res) => {
     const org = await getOrganizationById(orgId);
 
     if (!org) {
-      return res.status(404).json({ message: "لم يتم العثور على المؤسسة" });
+      return res.status(404).json({ message: "Organization Not Found" });
     }
 
     console.log("✅ Org fetched:", org);
@@ -135,6 +135,6 @@ export const getOrgDocumentsHandler = async (req, res) => {
     res.json({ registrationUrl, licenseUrl });
   } catch (err) {
     console.error("❌ Error while fetching org documents:", err);
-    res.status(500).json({ message: "خطأ في استرجاع الوثائق" });
+    res.status(500).json({ message: "Error while fetching org documents" });
   }
 };

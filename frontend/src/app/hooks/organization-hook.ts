@@ -33,7 +33,10 @@ export default function useOrganizationForm() {
   const FormSchema = z.object({
     name: z.string().min(1, "name is required"),
     type: z.string().min(1, "type is required"),
-    phone: z.string().min(1, "phone is required"),
+    phone: z
+      .string()
+      .min(1, "phone is required")
+      .length(10, "phone number must be exactly 10 digits"),
     address: AddressSchema,
   });
 
