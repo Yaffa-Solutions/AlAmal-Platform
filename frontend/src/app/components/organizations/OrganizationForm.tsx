@@ -1,6 +1,7 @@
 "use client";
 import useOrganizationForm from "@/app/hooks/organization-hook";
 import type { Address } from "@/types/organization";
+import { useEffect, useMemo } from "react";
 
 export default function OrganizationForm() {
   const {
@@ -13,6 +14,7 @@ export default function OrganizationForm() {
     submitting,
     error,
     success,
+    saveDraftLocally,
     setName,
     setPhone,
     setType,
@@ -22,13 +24,39 @@ export default function OrganizationForm() {
     onSubmit,
   } = useOrganizationForm();
 
+  const registrationPreview = useMemo(() => {
+    if (
+      registrationCertificate &&
+      registrationCertificate.type?.startsWith("image/")
+    ) {
+      return URL.createObjectURL(registrationCertificate);
+    }
+    return null;
+  }, [registrationCertificate]);
+
+  const professionalPreview = useMemo(() => {
+    if (professionalLicense && professionalLicense.type?.startsWith("image/")) {
+      return URL.createObjectURL(professionalLicense);
+    }
+    return null;
+  }, [professionalLicense]);
+
+  useEffect(() => {
+    return () => {
+      if (registrationPreview) URL.revokeObjectURL(registrationPreview);
+    };
+  }, [registrationPreview]);
+
+  useEffect(() => {
+    return () => {
+      if (professionalPreview) URL.revokeObjectURL(professionalPreview);
+    };
+  }, [professionalPreview]);
+
   return (
-    <div
-      dir="rtl"
-      className="font-sans min-h-screen bg-gradient-to-b from-[#f5f8ff] to-[#f8faff] py-10 px-4 "
-    >
-      <div className="max-w-2xl mx-auto bg-white rounded-3xl shadow-lg shadow-blue-200  border border-[#E8ECF3]">
-        <div className=" bg-[#EFF5FF]  py-4 ">
+    <div dir="rtl" className="font-sans min-h-screen py-10 px-4">
+      <div className="w-xl bg-white mx-auto rounded-3xl shadow-lg shadow-gray-200 border border-none">
+        <div className=" bg-[#EFF5FF] rounded-t-3xl py-4 ">
           <h1 className="text-center text-[28px]  font-extrabold text-[#1D64D8] mb-2">
             معلومات المؤسسة
           </h1>
@@ -37,7 +65,7 @@ export default function OrganizationForm() {
           </p>
         </div>
 
-        <form onSubmit={onSubmit} className="space-y-8 p-8">
+        <form onSubmit={onSubmit} className="relative space-y-8 p-8">
           <section className="space-y-4">
             <h2 className="text-[24px] mb-4 font-semibold text-[#4B5563] flex items-center gap-2">
               <span className="text-[#4B6BFB] text-lg">•</span> المعلومات
@@ -114,7 +142,10 @@ export default function OrganizationForm() {
                   className="border w-full border-[#E4E9F2] rounded-xl px-3 py-2 focus:ring-2 focus:ring-[#4B6BFB]/20 outline-none"
                   value={address.state || ""}
                   onChange={(e) =>
-                    setAddress((a: Address) => ({ ...a, state: e.target.value }))
+                    setAddress((a: Address) => ({
+                      ...a,
+                      state: e.target.value,
+                    }))
                   }
                 />
               </div>
@@ -127,7 +158,10 @@ export default function OrganizationForm() {
                   className=" w-full border border-[#E4E9F2] rounded-xl px-3 py-2 focus:ring-2 focus:ring-[#4B6BFB]/20 outline-none"
                   value={address.street || ""}
                   onChange={(e) =>
-                    setAddress((a: Address) => ({ ...a, street: e.target.value }))
+                    setAddress((a: Address) => ({
+                      ...a,
+                      street: e.target.value,
+                    }))
                   }
                 />
               </div>
@@ -149,7 +183,7 @@ export default function OrganizationForm() {
               <input
                 id="registrationFile"
                 type="file"
-                accept=".pdf,image/*"
+                accept=".pdf,.doc,.docx,image/*"
                 className="hidden"
                 onChange={(e) =>
                   setRegistrationCertificate(e.target.files?.[0] || null)
@@ -163,9 +197,19 @@ export default function OrganizationForm() {
               </label>
 
               {registrationCertificate && (
-                <p className="mt-2 text-sm text-gray-500">
-                  {registrationCertificate.name}
-                </p>
+                <div className="mt-2">
+                  {registrationPreview ? (
+                    <img
+                      src={registrationPreview}
+                      alt="معاينة شهادة التسجيل"
+                      className="mx-auto max-h-48 rounded-lg border border-gray-200"
+                    />
+                  ) : (
+                    <p className="text-sm text-gray-500">
+                      {registrationCertificate.name}
+                    </p>
+                  )}
+                </div>
               )}
             </div>
 
@@ -183,7 +227,7 @@ export default function OrganizationForm() {
                   <input
                     id="professionalLicense"
                     type="file"
-                    accept=".pdf,image/*"
+                    accept=".pdf,.doc,.docx,image/*"
                     onChange={(e) =>
                       setProfessionalLicense(e.target.files?.[0] || null)
                     }
@@ -199,9 +243,19 @@ export default function OrganizationForm() {
                   </label>
 
                   {professionalLicense && (
-                    <p className="mt-2 text-xs text-gray-500">
-                      {professionalLicense.name}
-                    </p>
+                    <div className="mt-2">
+                      {professionalPreview ? (
+                        <img
+                          src={professionalPreview}
+                          alt="معاينة ترخيص المهن"
+                          className="mx-auto max-h-48 rounded-lg border border-gray-200"
+                        />
+                      ) : (
+                        <p className="text-xs text-gray-500">
+                          {professionalLicense.name}
+                        </p>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
@@ -220,8 +274,8 @@ export default function OrganizationForm() {
           <div className="flex gap-3 justify-center pt-6">
             <button
               type="button"
+              onClick={saveDraftLocally}
               className="border border-[#D0D7E2] text-[#1A2954] px-8 py-2 rounded-xl hover:bg-[#F3F5F9] transition font-medium"
-              onClick={() => window.history.back()}
             >
               حفظ كمسودة
             </button>
