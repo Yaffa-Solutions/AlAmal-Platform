@@ -40,7 +40,7 @@ export default function ChooseRole() {
       if (role === 'PATIENT') {
         router.push('/pages/forms/patient');
       } else if (role === 'ORGANIZATION') {
-        router.push('/pages/forms/organizations');
+        router.push('/pages/forms/organization');
       } else if (role === 'DONOR') {
         router.push('/pages/forms/donor');
       }
