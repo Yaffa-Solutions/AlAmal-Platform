@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useOTP } from '../../../hooks/useOTP';
 import { useMagicLink } from '../../../hooks/useMagicLink';
 import { Mail, ShieldCheck } from 'lucide-react';
@@ -23,8 +23,13 @@ export default function Login() {
     setError
   );
 
-    useMagicLink(setError);
+  useMagicLink(setError);
 
+  useEffect(() => {
+    if (code.every((num) => num !== '')) {
+      document.getElementById('confirm-btn')?.click();
+    }
+  }, [code]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -146,6 +151,7 @@ export default function Login() {
           />
 
           <button
+            id="confirm-btn"
             disabled={code.some((num) => num === '')}
             onClick={handleVerify}
             className={`w-86 bg-[#3B82F6] text-white font-medium py-2 rounded-lg hover:bg-[#2563EB] transition-all duration-200
