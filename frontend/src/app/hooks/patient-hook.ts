@@ -68,7 +68,6 @@ export function usePatientForm() {
       .then((key) => {
         const payload = {
           ...data,
-          user_id: 11,
           medical_reports_url: key,
         };
         return postForm<Patient>(`/api/patient/register`, payload);
