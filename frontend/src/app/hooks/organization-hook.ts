@@ -4,8 +4,10 @@ import { postForm } from "@/lib/api";
 import type { Address, Organization } from "@/types/organization";
 import { API_BASE } from "@/lib/api";
 import { z } from "zod";
+import { useRouter } from "next/navigation";
 
 export default function useOrganizationForm() {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [type, setType] = useState<string | "">("");
@@ -63,23 +65,33 @@ export default function useOrganizationForm() {
   }
 
   async function uploadFileToS3(file: File) {
-    const { url, key } = await fetch(
-      `${API_BASE}/api/organizations/upload-url`,
-      {
+    console.log("Starting upload to S3...");
+    try {
+      const response = await fetch(`${API_BASE}/api/organizations/upload-url`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ filename: file.name, contentType: file.type }),
-      }
-    ).then((res) => res.json());
+      });
 
-    if (url) {
-      await fetch(url, {
+      console.log("Response from upload-url:", response.status);
+      if (!response.ok) throw new Error(await response.text());
+
+      const { url, key } = await response.json();
+      console.log("Signed URL:", url);
+
+      const put = await fetch(url, {
         method: "PUT",
         body: file,
         headers: { "Content-Type": file.type },
       });
+
+      console.log("S3 PUT status:", put.status);
+
+      return key as string;
+    } catch (err) {
+      console.error("uploadFileToS3 error:", err);
+      throw err;
     }
-    return key as string;
   }
 
   async function onSubmit(e: React.FormEvent) {
@@ -109,17 +121,18 @@ export default function useOrganizationForm() {
         return;
       }
 
+
       const registrationKey = await uploadFileToS3(registrationCertificate);
       const licenseKey = await uploadFileToS3(professionalLicense);
 
       const payload = {
         name,
         phone,
-        user_id: 1,
+        user_id: localStorage.getItem("id"),
         type,
         address,
-        registration_certificate_key: registrationKey,
-        professional_license_key: licenseKey,
+        registrationCertificate: registrationKey,
+        professionalLicense: licenseKey,
       };
 
       const created = await postForm<Organization>(
@@ -128,6 +141,10 @@ export default function useOrganizationForm() {
       );
 
       setSuccess(created);
+      if (created?.id) {
+        localStorage.setItem("orgId", created?.id.toString());
+        router.push(`/pages/dashboards/organization`);
+      }
       setName("");
       setPhone("");
       setType("");

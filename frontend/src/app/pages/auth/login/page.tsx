@@ -6,13 +6,13 @@ import { Mail, ShieldCheck } from 'lucide-react';
 import ResendOTPButton from '../../../components/ResendOTPButton';
 
 export default function Login() {
-  const [email, setEmail] = useState<string>('');
+  const [email, setEmail] = useState<string>("");
   const [error, setError] = useState<{
     message: string;
-    color: 'red' | 'green';
+    color: "red" | "green";
   } | null>(null);
-  const [step, setStep] = useState<'email' | 'verify'>('email');
-  const [code, setcode] = useState<string[]>(['', '', '', '', '', '']);
+  const [step, setStep] = useState<"email" | "verify">("email");
+  const [code, setcode] = useState<string[]>(["", "", "", "", "", ""]);
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
 
   const { loading, handleSendOTP, handleVerify, resendOTP } = useOTP(
@@ -52,22 +52,22 @@ export default function Login() {
     e: React.KeyboardEvent<HTMLInputElement>,
     index: number
   ) => {
-    if (e.key === 'Backspace' && !code[index] && index > 0) {
+    if (e.key === "Backspace" && !code[index] && index > 0) {
       inputsRef.current[index - 1]?.focus();
     }
   };
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center text-center gap-4">
-      {step === 'email' ? (
+      {step === "email" ? (
         <>
           <Mail className="text-[#3B82F6] bg-blue-100 p-4 rounded-full w-15 h-15" />
           <h1 className="text-black text-xl font-bold ">
-            {' '}
-            اهلا بك في منصة الأمل{' '}
+            {" "}
+            اهلا بك في منصة الأمل{" "}
           </h1>
           <p className="text-gray-600 text-sm">
-            أدخل الايميل الخاص بك لتلقي رمز التحقق{' '}
+            أدخل الايميل الخاص بك لتلقي رمز التحقق{" "}
           </p>
           <div className="flex flex-col items-end text-right">
             <label className="text-gray-600 pb-2">الايميل</label>
@@ -81,7 +81,7 @@ export default function Login() {
             {error && (
               <p
                 className={`text-xs mb-2 ${
-                  error.color === 'red' ? 'text-red-500' : 'text-green-500'
+                  error.color === "red" ? "text-red-500" : "text-green-500"
                 }`}
               >
                 {error.message}
@@ -92,8 +92,8 @@ export default function Login() {
               disabled={loading}
               className={`w-86 flex items-center justify-center bg-[#3B82F6] text-white font-medium py-2 rounded-lg transition-all duration-200 ${
                 loading
-                  ? 'cursor-not-allowed bg-[#2563EB]/50'
-                  : 'hover:bg-[#2563EB]'
+                  ? "cursor-not-allowed bg-[#2563EB]/50"
+                  : "hover:bg-[#2563EB]"
               }`}
             >
               {loading && (
@@ -106,7 +106,7 @@ export default function Login() {
                   </span>
                 </div>
               )}
-              {loading ? 'جاري الإرسال' : 'إرسال رمز التحقق'}
+              {loading ? "جاري الإرسال" : "إرسال رمز التحقق"}
             </button>
           </div>
         </>
@@ -136,7 +136,7 @@ export default function Login() {
           {error && (
             <p
               className={`text-xs mb-2 ${
-                error.color === 'red' ? 'text-red-500' : 'text-green-500'
+                error.color === "red" ? "text-red-500" : "text-green-500"
               }`}
             >
               {error.message}
@@ -156,9 +156,9 @@ export default function Login() {
             onClick={handleVerify}
             className={`w-86 bg-[#3B82F6] text-white font-medium py-2 rounded-lg hover:bg-[#2563EB] transition-all duration-200
               ${
-                code.some((num) => num === '')
-                  ? 'bg-gray-300  cursor-not-allowed'
-                  : 'bg-[#3B82F6] text-white hover:bg-[#2563EB]'
+                code.some((num) => num === "")
+                  ? "bg-gray-300  cursor-not-allowed"
+                  : "bg-[#3B82F6] text-white hover:bg-[#2563EB]"
               }
               `}
           >
@@ -170,7 +170,7 @@ export default function Login() {
                 <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"></span>
               </div>
             )}
-            {loading ? 'جاري التحقق' : 'تأكيد'}
+            {loading ? "جاري التحقق" : "تأكيد"}
           </button>
         </>
       )}

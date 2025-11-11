@@ -1,8 +1,17 @@
 import { createOrganization } from "../services/organization-service.js";
-import { generatePresignedUrl } from "../services/s3-service.js";
+import {
+  generatePresignedUrl,
+  getSignedUrlForFile,
+} from "../services/s3-service.js";
 import { z } from "zod";
+import {
+  getOrganizationById,
+  getOrganizationByUserId,
+} from "../services/organization-service.js";
 
 export const getUploadUrl = async (req, res) => {
+  console.log(req.body);
+
   try {
     const { filename, contentType } = req.body;
 
@@ -11,6 +20,20 @@ export const getUploadUrl = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to generate upload URL" });
+  }
+};
+
+export const getOrgByIdHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const org = await getOrganizationById(id);
+    if (!org)
+      return res.status(404).json({ message: "Organization not found" });
+    res.json(org);
+  } catch (err) {
+    console.error("getOrgByIdHandler error:", err);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -38,8 +61,9 @@ export const createOrgHandler = async (req, res) => {
           "Phone number can only contain digits, +, -, and spaces"
         ),
       address: AddressSchema,
-      registration_certificate_key: z.string().optional(),
-      professional_license_key: z.string().optional(),
+      user_id: z.union([z.string(), z.number()]),
+      registrationCertificate: z.string().optional(),
+      professionalLicense: z.string().optional(),
     });
 
     const parsed = OrganizationCreateSchema.safeParse(req.body);
@@ -55,23 +79,68 @@ export const createOrgHandler = async (req, res) => {
       type,
       phone,
       address,
-      registration_certificate_key,
-      professional_license_key,
+      user_id,
+      registrationCertificate,
+      professionalLicense,
     } = parsed.data;
 
     const org = await createOrganization({
       name,
       type,
       phone,
-      userId: 1,
+      user_id: Number(user_id),
       address,
-      registrationCertificate: registration_certificate_key,
-      professionalLicense: professional_license_key,
+      registrationCertificate,
+      professionalLicense,
     });
 
     res.status(201).json(org);
+    localStorage.setItem("orgId", org.id);
+    localStorage.setItem("orgName", org.name);
   } catch (err) {
     console.error("createOrgHandler error:", err);
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getOrgByUserHandler = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const org = await getOrganizationByUserId(userId);
+
+    if (!org) {
+      return res.status(404).json({ message: "Organization not found" });
+    }
+
+    res.status(200).json(org);
+  } catch (error) {
+    console.error("Error fetching organization by user ID:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getOrgDocumentsHandler = async (req, res) => {
+  try {
+    const orgId = req.params.id;
+    const org = await getOrganizationById(orgId);
+
+    if (!org) {
+      return res.status(404).json({ message: "Organization Not Found" });
+    }
+
+    console.log("✅ Org fetched:", org);
+
+    const registrationUrl = org.registrationCertificate
+      ? await getSignedUrlForFile(org.registrationCertificate)
+      : null;
+
+    const licenseUrl = org.professionalLicense
+      ? await getSignedUrlForFile(org.professionalLicense)
+      : null;
+
+    res.json({ registrationUrl, licenseUrl });
+  } catch (err) {
+    console.error("❌ Error while fetching org documents:", err);
+    res.status(500).json({ message: "Error while fetching org documents" });
   }
 };
