@@ -54,12 +54,9 @@ export default function OrganizationForm() {
   }, [professionalPreview]);
 
   return (
-    <div
-      dir="rtl"
-      className="font-sans min-h-screen bg-gradient-to-b from-[#f5f8ff] to-[#f8faff] py-10 px-4 "
-    >
-      <div className="max-w-2xl mx-auto bg-white rounded-3xl shadow-lg shadow-blue-200  border border-[#E8ECF3]">
-        <div className=" bg-[#EFF5FF]  py-4 ">
+    <div dir="rtl" className="font-sans min-h-screen py-10 px-4">
+      <div className="w-xl bg-white mx-auto rounded-3xl shadow-lg shadow-gray-200 border border-none">
+        <div className=" bg-[#EFF5FF] rounded-t-3xl py-4 ">
           <h1 className="text-center text-[28px]  font-extrabold text-[#1D64D8] mb-2">
             معلومات المؤسسة
           </h1>
