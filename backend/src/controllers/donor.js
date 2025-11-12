@@ -24,3 +24,14 @@ export const createDonorController = async (req, res, next) => {
         next(err);
     }
 };
+
+export const getDonorByUser = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const donor = await prisma.donor.findUnique({ where: { user_id: Number(userId) } });
+    if (!donor) return res.status(404).json({ message: 'Donor not found' });
+    res.json({ donorId: donor.id });
+  } catch (err) {
+    next(err);
+  }
+};
