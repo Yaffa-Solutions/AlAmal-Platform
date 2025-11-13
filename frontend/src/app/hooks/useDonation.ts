@@ -27,7 +27,7 @@ export const useDonationForm = () => {
       return false;
     }
 
-    const donorId = Number(localStorage.getItem('donorId'));
+    const donorId = Number(localStorage.getItem('id'));
     if (!donorId) {
       setError({ message: 'تعذر الحصول على بيانات المتبرع', color: 'red' });
       setLoading(false);

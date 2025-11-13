@@ -1,17 +1,8 @@
 import prisma from "../config/db.js";
 
-export const getMyDonationsService = async (userId) => {
-
-  const donor = await prisma.donor.findUnique({
-    where: { user_id: userId },
-  });
-
-  if (!donor) {
-    return { status: false, error: "Donor not found", donations: [] };
-  }
-
+export const getMyDonationsService = async (donor_id) => {
   const donations = await prisma.donations.findMany({
-    where: { donor_id: donor.id },
+    where: { donor_id },
     include: {
       campaigns: {
         select: {
