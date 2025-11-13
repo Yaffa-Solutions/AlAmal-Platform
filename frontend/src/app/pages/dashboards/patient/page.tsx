@@ -3,13 +3,28 @@ import EditPatientForm from '@/app/components/patient/EditPatientForm';
 import NavbarDash from '@/app/components/patient/NavbarDash';
 import { OrderDetailsDialog } from '@/app/components/patient/OrderDetailsDialog';
 import { usePatientDashboard } from '@/app/hooks/patient-hook';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function Patient() {
   const [open, setOpen] = useState(false);
   const [open_edit, setOpenEdit] = useState(false);
-  const { requestDetails, translateDisability } = usePatientDashboard();
+  const { requestDetails, translateDisability  , loading , loadDetails} = usePatientDashboard();
 
+ useEffect (() => {
+  if (!open_edit) {
+    loadDetails();
+  }
+}, [open_edit]);
+
+    if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen text-gray-600 text-lg">
+        جاري التحميل...
+      </div>
+    );
+  }
+
+  
   return (
     <div
       className="min-h-screen w-full"

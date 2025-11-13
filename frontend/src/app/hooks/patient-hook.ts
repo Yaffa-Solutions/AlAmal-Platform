@@ -122,17 +122,27 @@ export function usePatientForm() {
 export function usePatientDashboard() {
   const [requestDetails, setRequestDetails] =
     useState<PatientRequestDetails | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+ const loadDetails = () => {
+  setLoading(true);
+    return fetch(`${API_BASE}/api/patient/requestDetails`, { credentials: "include" })
+      .then((res) => res.json())
+      .then(({ data }) => setRequestDetails(data))
+      .catch((er) => toast.error(er.message)).finally(()=>{
+        setLoading(false);
+      });
+  };
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/patient/requestDetails`,{
-      credentials:"include"
-    })
-      .then((res) => res.json())
-      .then(({ data }) => {
-        setRequestDetails(data);
-      })
-      .catch((er) => toast.error(er.message));
+    loadDetails();
   }, []);
+
+  useEffect(() => {
+    if (!loading && !requestDetails) {
+      router.push(`/pages/forms/patient`);
+    }
+  }, [loading, requestDetails, router]);
 
   function translateDisability(type: string): string {
     switch (type) {
@@ -157,7 +167,7 @@ export function usePatientDashboard() {
     }
   }
 
-  return { requestDetails, translateDisability };
+  return { requestDetails, translateDisability  ,loadDetails , loading};
 }
 
 export interface PatientRequestDetails {
@@ -185,6 +195,8 @@ export interface PatientRequestDetails {
 
 export function useUpdatePatientForm() {
   const router = useRouter();
+  const { loadDetails } = usePatientDashboard();
+
   const [disabilityPercentage, setDisabilityPercentage] = useState(0);
   const [medicalReport, setMedicalReport] = useState<File | null>(null);
   const [prosthetic, setProsthetic] = useState([]);
@@ -252,7 +264,6 @@ export function useUpdatePatientForm() {
           setSelectedProsthetic(data.disability_type);
           setDisabilityPercentage(data.disability_percentage);
           setMedicalReport(null);
-
           setValue('city', data.city);
           setValue('gender', data.gender);
           setValue('disability_type', data.disability_type);
