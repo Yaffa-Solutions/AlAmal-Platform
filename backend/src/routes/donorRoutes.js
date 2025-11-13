@@ -1,5 +1,5 @@
 import express from 'express';
-import { createDonorController,getDonorByUser } from '../controllers/donor.js';
+import { createDonorController } from '../controllers/donor.js';
 import { getCampaigns } from '../controllers/compaign.js';
 import { authenticateToken } from '../middlewares/authToken.js';
 import { getMyDonationsController } from '../controllers/mydonationController.js';
@@ -11,7 +11,6 @@ router.get('/dashboard', authenticateToken, getCampaigns);
 router.get('/my-donations', authenticateToken, getMyDonationsController);
 router.post('/create-payment', authenticateToken, handleCreatePayment);
 router.post("/confirm-donation", authenticateToken, handleConfirmDonation);
-router.get('/by-user/:userId', authenticateToken, getDonorByUser);
 
 
 export default router;
