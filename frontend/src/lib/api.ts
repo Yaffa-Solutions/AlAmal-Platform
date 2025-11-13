@@ -6,6 +6,7 @@ export async function postForm<T>(path: string, data: object): Promise<T> {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
+    credentials:"include",
   });
   if (!res.ok) {
     let msg = `Request failed (${res.status})`;
@@ -23,6 +24,7 @@ export async function putForm<T>(path: string, data: object): Promise<T> {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
+    credentials:"include",
   });
   if (!res.ok) {
     let msg = `Request failed (${res.status})`;

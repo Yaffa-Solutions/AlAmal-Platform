@@ -51,7 +51,6 @@ export function usePatientForm() {
   };
 
   const onSubmit = (data: PatientFormData) => {
-    console.log('done');
     if (!medicalReport) {
       toast.error('يرجى إرفاق التقرير الطبي قبل الإرسال');
       return;
@@ -67,13 +66,10 @@ export function usePatientForm() {
         }).then(() => key);
       })
       .then((key) => {
-        console.log(key);
         const payload = {
           ...data,
-          user_id: 11,
           medical_reports_url: key,
         };
-        console.log(payload);
         return postForm<Patient>(`/api/patient/register`, payload);
       })
       .then((patient) => {
@@ -128,7 +124,9 @@ export function usePatientDashboard() {
     useState<PatientRequestDetails | null>(null);
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/patient/requestDetails`)
+    fetch(`${API_BASE}/api/patient/requestDetails`,{
+      credentials:"include"
+    })
       .then((res) => res.json())
       .then(({ data }) => {
         setRequestDetails(data);
@@ -236,11 +234,9 @@ export function useUpdatePatientForm() {
       const payload = {
         ...data,
         disability_percentage: data.disability_percentage,
-        user_id: 11,
         medical_reports_url: key,
       };
 
-      console.log(payload);
       if (key) {
         setUploadedFileName(key.split('/').pop() || null);
       }
