@@ -1,5 +1,6 @@
 'use client';
 import EditPatientForm from '@/app/components/patient/EditPatientForm';
+import NavbarDash from '@/app/components/patient/NavbarDash';
 import { OrderDetailsDialog } from '@/app/components/patient/OrderDetailsDialog';
 import { usePatientDashboard } from '@/app/hooks/patient-hook';
 import { useState } from 'react';
@@ -18,8 +19,10 @@ export default function Patient() {
           'linear-gradient(90deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 100%), linear-gradient(90deg, rgb(249, 250, 251) 0%, rgb(249, 250, 251) 100%)',
       }}
     >
+      <NavbarDash/>
       <div
-        className="box-border content-stretch flex flex-col gap-[16px] items-end leading-[0] not-italic px-4 sm:px-8 md:px-16 lg:px-[112px] py-0 w-full max-w-[1441px] mx-auto mt-[88px] sm:mt-[106px]"
+        className="box-border content-stretch flex flex-col gap-[16px] items-end leading-[0] not-italic px-4 sm:px-8 md:px-16 lg:px-[112px] py-0 w-full max-w-[1441px] mx-auto mt-[40px] sm:mt-[50px]
+"
         data-name="Heading 1"
       >
         <div className="flex flex-col font-['Cairo:Bold',sans-serif] font-bold justify-center min-w-full relative shrink-0 text-[#1d64d8] text-[24px] sm:text-[28px] md:text-[32px] text-right w-[min-content]">
@@ -247,7 +250,11 @@ export default function Patient() {
 
                     return (
                       <div
-                        className={`${bg} relative rounded-[8px] shrink-0 w-full`}
+                        className={`${bg} relative rounded-[8px] shrink-0 w-full   ${
+                          requestDetails.status === 'REJECTED'
+                            ? 'border-2 border-red-500 border-dashed'
+                            : ''
+                        }`}
                       >
                         <div className="flex flex-row items-center justify-end size-full">
                           <div className="box-border content-stretch flex gap-3 sm:gap-[16px] items-center justify-end p-[10px] relative w-full">
@@ -339,6 +346,22 @@ export default function Patient() {
                             </div>
                           </div>
                         </div>
+                        {requestDetails.status === 'REJECTED' ? (
+                          <ul className="bg-gradient-to-r from-blue-10 to-blue-10  p-6 text-right space-y-3 ">
+                            <li className="text-blue-700 font-semibold text-base flex items-center justify-end gap-2">
+                             
+                              <span className="text-gray-700 leading-relaxed">
+                                نحن نؤمن بأن كل بداية جديدة تصنع فرصة أفضل
+                              </span> <span>لا تقلق 🌿</span>
+                            </li>
+                            <li className="text-gray-700 leading-relaxed">
+                              نحن هنا لدعمك دائمًا — يمكنك تعديل طلبك وإرساله من
+                              جديد، وسنكون إلى جانبك خطوة بخطوة 💙
+                            </li>
+                          </ul>
+                        ) : (
+                          <p></p>
+                        )}
                       </div>
                     );
                   })()}

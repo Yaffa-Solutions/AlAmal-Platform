@@ -18,7 +18,6 @@ export const getUploadUrl = (req, res, next) => {
 
 export const AddPatient = (req, res, next) => {
   const {
-    user_id,
     name,
     Phone,
     age,
@@ -27,8 +26,9 @@ export const AddPatient = (req, res, next) => {
     disability_type,
     disability_percentage,
     medical_reports_url,
-  } = req.body;
-
+  } = req.body;  
+  const user_id =req.user.id;
+  
   createPatient({
     user_id,
     name,
@@ -56,8 +56,8 @@ export const GetAllProsthetic = (req, res) => {
   res.status(200).json({ prostheticTypes: Object.values(ProstheticType) });
 };
 
-export const GetRequestDetails = (req, res, next) => {
-  const user_id = req.user.id;
+export const GetRequestDetails = (req, res, next) => {  
+  const user_id = req.user.id;  
   getPatientUserId(user_id)
     .then(({ id }) => requestDetails(id))
     .then((request) => {

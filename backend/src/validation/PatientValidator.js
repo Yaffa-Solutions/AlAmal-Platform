@@ -28,10 +28,5 @@ export const patientSchema = z.object({
       z.number().int().min(0, "Min 0").max(100, "Max 100")
     ),
 
-  medical_reports_url: z.string(),
-
-  user_id: z
-    .preprocess((val) => Number(val), 
-      z.number().int().min(1, "user_id must be positive")
-    ),
+  medical_reports_url: z.string()
 });
