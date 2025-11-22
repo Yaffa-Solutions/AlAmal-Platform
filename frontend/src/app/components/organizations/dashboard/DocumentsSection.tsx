@@ -13,7 +13,7 @@ export default function DocumentsSection({ orgId }: { orgId: string }) {
   useEffect(() => {
     async function fetchDocs() {
       const res = await fetch(
-        `http://localhost:5000/api/organizations/${orgId}/documents`
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/organizations/${orgId}/documents`
       );
       const data: Documents = await res.json();
       setDocs(data);
